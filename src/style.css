@@ -484,3 +484,5 @@ textarea.answer { resize: vertical; font-family: inherit; }
 .duo .practice small { grid-column: 1 / -1; }
 .duo .practice b { font-size: 0.95rem; min-width: 0; overflow-wrap: break-word; line-height: 1.2; }
 .duo .practice small { font-size: 0.82rem; line-height: 1.3; }
+.live .lang { display: flex; flex-direction: row; align-items: center; gap: 8px; justify-content: center; }
+.live .lang select { width: auto; border: 2px solid var(--line); border-radius: 10px; padding: 6px 10px; font: inherit; background: var(--card); color: var(--ink); }

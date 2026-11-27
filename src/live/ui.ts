@@ -21,6 +21,8 @@ export interface LiveDeps {
   track(name: string): void;
   /** the viewer's interface language, the language they learn, and their open topics */
   ui(): string;
+  /** changes (and remembers) the viewer's interface language */
+  setUi(lang: string): void;
   learn(): string;
   topics(): TopicId[];
 }
@@ -256,6 +258,18 @@ export function createLive(d: LiveDeps) {
       lastKey = '';
       tick();
     }
+    /**
+     * The player's own language for questions and descriptions. The answers stay in
+     * the game's language: that is what the game is about.
+     */
+    const langPicker = () => LANG_LIST.length > 1 && h('label', { class: 'lang' }, h('span', null, '🌐'),
+      h('select', { 'aria-label': t('iSpeak'), onchange: (e: Event) => {
+        d.setUi((e.target as HTMLSelectElement).value);
+        t = text(d.ui());
+        lastKey = '';
+        tick();
+      } }, LANG_LIST.map((l) => h('option', { value: l.code, selected: l.code === d.ui() }, l.name))));
+
     const joinForm = () => {
       const input = h('input', { type: 'text', maxlength: 16, placeholder: t('liveName'), 'aria-label': t('liveName'), value: remembered(), autocomplete: 'nickname' });
       return h('form', { class: 'joinrow', onsubmit: (e: Event) => { e.preventDefault(); void joinAs(input.value); } },
@@ -361,7 +375,7 @@ export function createLive(d: LiveDeps) {
       const score = () => h('div', { class: 'myscore' }, h('b', null, p.name), h('span', null, `⭐ ${t('liveScore', { n: p.score })}`));
       switch (ph.phase) {
         case 'lobby':
-          return [h('div', { class: 'ready' }, h('div', { class: 'emoji' }, '⛵'), h('h2', null, t('liveYouAreIn', { name: p.name })), h('p', null, t('liveWatchScreen')))];
+          return [h('div', { class: 'ready' }, h('div', { class: 'emoji' }, '⛵'), h('h2', null, t('liveYouAreIn', { name: p.name })), h('p', null, t('liveWatchScreen')), langPicker())];
         case 'countdown':
           return [score(), h('div', { class: 'ready' }, h('h2', null, ph.q === 0 ? t('liveGetReady') : t('liveQuestion', { n: ph.q + 1, total: g.questions.length })), (live.number = h('div', { class: 'number' }, '')))];
         case 'ask': {
@@ -467,7 +481,7 @@ export function createLive(d: LiveDeps) {
       else if (isHost() && !me) body = [h('div', { class: 'hostview' }, ...screenBody(ph).filter((x): x is HTMLElement => Boolean(x)))];
       else if (!me) body = [
         h('div', { class: 'topbar' }, btn('←', () => d.navigate('party'), 'icon'), h('h2', null, `🎉 ${t('liveTitle')}`)),
-        ph.phase === 'done' ? h('div', { class: 'quote' }, t('liveFinal')) : h('section', { class: 'settings' }, h('b', null, t('liveJoinTitle')), joinForm()),
+        ph.phase === 'done' ? h('div', { class: 'quote' }, t('liveFinal')) : h('section', { class: 'settings' }, h('b', null, t('liveJoinTitle')), joinForm(), langPicker()),
       ];
       else body = playerBody(ph);
       // the host can always move the game along by hand

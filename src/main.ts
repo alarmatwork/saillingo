@@ -549,7 +549,7 @@ function route() {
 window.addEventListener('hashchange', route);
 
 const admin = createAdmin({ show, goHome, toast, signIn: () => navigate('signin'), user: () => account.user, expectsUser: () => Boolean(st.account) && !account.user && account.status !== 'error', token: () => account.token() });
-const live = createLive({ show, toast, goHome, navigate, track, ui: () => st.ui, learn: () => st.learn, topics: () => st.topics });
+const live = createLive({ show, toast, goHome, navigate, track, ui: () => st.ui, setUi: (lang) => { st.ui = lang; saveState(st); }, learn: () => st.learn, topics: () => st.topics });
 
 function toast(message: string) {
   const el = h('div', { class: 'toast', role: 'status' }, message);
