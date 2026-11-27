@@ -158,7 +158,7 @@ export const enUi = {
   qGiveWay: 'Who gives way? Tap the boat that must keep out of the way.',
   both: 'Both give way',
   qRule: 'Which rule applies here?',
-  qFindRule: 'Tap the situation where the rule below applies.',
+  qFindRule: 'Tap the situation where this rule applies.',
   syncBanner: 'Want to keep your score and carry on from another device? Sign in with Google, Apple or a link sent to your email. It is optional.',
   signIn: 'Sign in',
   signInTitle: 'Sign in to save your progress',

@@ -772,8 +772,8 @@ function runSession(sess: Session, lesson: Lesson | null, test = false) {
             verdict(e, ok ? 'ok' : 'bad', e.term);
           },
         });
-        // like every exercise: the picture, then the question, then the task (what to find)
-        body.replaceChildren(view.el, h('h2', null, isSituation(e.term) ? t('qFindRule') : t('qFind')), h('div', { class: `quote big${isSituation(e.term) ? ' rule' : ''}` }, termName(e.term)));
+        // the picture, the word to find, then what to do with it
+        body.replaceChildren(view.el, h('div', { class: `quote big${isSituation(e.term) ? ' rule' : ''}` }, termName(e.term)), h('h2', null, isSituation(e.term) ? t('qFindRule') : t('qFind')));
         noButton();
         break;
       }

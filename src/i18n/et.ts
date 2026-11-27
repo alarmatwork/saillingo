@@ -181,7 +181,7 @@ export const et: LanguagePack = {
     qGiveWay: 'Kes annab teed? Puuduta paati, mis peab teed andma.',
     both: 'Mõlemad annavad teed',
     qRule: 'Milline reegel siin kehtib?',
-    qFindRule: 'Puuduta olukorda, kus kehtib allolev reegel.',
+    qFindRule: 'Puuduta olukorda, kus see reegel kehtib.',
     syncBanner: 'Tahad oma tulemust alles hoida ja jätkata teises seadmes? Logi sisse Google\'i, Apple\'i või e-kirjaga saadetud lingi abil. See on vabatahtlik.',
     signIn: 'Logi sisse',
     signInTitle: 'Logi sisse, et edenemine säiliks',
