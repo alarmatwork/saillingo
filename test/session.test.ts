@@ -303,3 +303,17 @@ test('admin: home screen install steps are added up across browsers', async () =
   assert.equal(by['Starts from the home screen'].count, 30); // app-first-open is not counted as app-open
   assert.equal(by['Closed the note'].count, 0);
 });
+
+test('signing in on a fresh device follows the language that has progress', async () => {
+  const { defaultState, mergeCloud, followProgress, noProgress } = await import('../src/store.ts');
+  const s = defaultState('en'); // a phone in English
+  assert.equal(noProgress(s), true);
+  mergeCloud(s, { v: 1, xp: 1268, streak: 1, lastDay: '', progress: { et: { hull: { box: 3, due: 0, seen: 4, wrong: 0 }, bow: { box: 2, due: 0, seen: 2, wrong: 0 } } }, updated: 0 });
+  assert.equal(followProgress(s, () => true), true);
+  assert.equal(s.learn, 'et');
+  // a player who chose a language with progress keeps it
+  const t = defaultState('en');
+  t.progress = { en: { hull: { box: 1, due: 0, seen: 1, wrong: 0 } }, et: { hull: { box: 3, due: 0, seen: 3, wrong: 0 }, bow: { box: 3, due: 0, seen: 3, wrong: 0 } } };
+  assert.equal(followProgress(t, () => true), false);
+  assert.equal(t.learn, 'en');
+});

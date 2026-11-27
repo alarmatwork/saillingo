@@ -1,6 +1,7 @@
 // The game's side of optional sign-in: loads sync.js when needed, merges the
 // saved progress with what is on this device, and uploads after every change.
-import { cloudData, mergeCloud, saveState, setSaveListener, type State } from '../store.ts';
+import { cloudData, followProgress, mergeCloud, noProgress, saveState, setSaveListener, type State } from '../store.ts';
+import { LANGS } from '../i18n/index.ts';
 import { FIREBASE_CONFIG } from './config.ts';
 import type { Cloud, CloudFactory, CloudUser, Provider } from './types.ts';
 
@@ -91,7 +92,10 @@ export function createAccount(getState: () => State, changed: () => void, askEma
     account.status = 'loading';
     changed();
     try {
+      const fresh = noProgress(st);
       mergeCloud(st, await cloud!.load(user.uid));
+      // a fresh device starts in the phone's language: follow the account's progress instead
+      if (fresh) followProgress(st, (lang) => lang in LANGS);
       st.account = { name: user.name };
       account.status = 'synced';
       saveState(st); // also triggers the upload of the merged result

@@ -72,6 +72,8 @@ export const enUi = {
   searchSuggest: 'Suggest adding it',
   searchMailBody: 'Please add the term "{q}" to SailLingo.',
   updated: 'SailLingo was updated to version {n}',
+  learnSwitched: 'Now learning terms in {lang}',
+  switchBack: 'Back to {lang}',
   partnerWrite: 'Write to',
   at: '[at]',
   partnerSubject: 'SailLingo partnership',

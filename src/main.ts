@@ -548,8 +548,22 @@ function route() {
   const q = new URLSearchParams(location.hash.slice(1));
   const learn = q.get('learn');
   if (learn && LANGS[learn] && learn !== st.learn) {
+    // a shared link opens in its own language; say so, with a way back, since
+    // progress is kept per language and the old one would seem to be gone
+    const before = st.learn;
     st.learn = learn;
     saveState(st);
+    if (Object.keys(st.progress[before] ?? {}).length) {
+      toast(t('learnSwitched', { lang: LANGS[learn].name }), {
+        label: `↩ ${t('switchBack', { lang: LANGS[before]?.name ?? before })}`,
+        run: () => {
+          st.learn = before;
+          saveState(st);
+          history.replaceState(null, '', `#${location.hash.slice(1).replace(/(^|&)learn=[^&]*/, `$1learn=${before}`)}`);
+          route();
+        },
+      });
+    }
   }
   const lesson = LESSONS.find((l) => l.id === q.get('lesson'));
   if (lesson) return openLesson(lesson);
@@ -582,10 +596,12 @@ window.addEventListener('hashchange', route);
 const admin = createAdmin({ show, goHome, toast, signIn: () => navigate('signin'), user: () => account.user, expectsUser: () => Boolean(st.account) && !account.user && account.status !== 'error', token: () => account.token() });
 const live = createLive({ show, toast, goHome, navigate, track, ui: () => st.ui, setUi: (lang) => { st.ui = lang; saveState(st); }, learn: () => st.learn, topics: () => st.topics });
 
-function toast(message: string) {
-  const el = h('div', { class: 'toast', role: 'status' }, message);
+function toast(message: string, action?: { label: string; run: () => void }) {
+  document.querySelector('.toast.withaction')?.remove();
+  const el = h('div', { class: `toast${action ? ' withaction' : ''}`, role: 'status' }, h('span', null, message),
+    action && h('button', { type: 'button', onclick: () => { el.remove(); action.run(); } }, action.label));
   document.body.append(el);
-  setTimeout(() => el.remove(), 2200);
+  setTimeout(() => el.remove(), action ? 8000 : 2200);
 }
 
 async function share(target: string, title: string) {

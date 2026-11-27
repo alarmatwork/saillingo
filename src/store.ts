@@ -162,6 +162,23 @@ export function mergeCloud(s: State, remote: unknown): void {
   }
 }
 
+/** True when nothing has been practised on this device yet, in any language. */
+export const noProgress = (s: State) => Object.values(s.progress).every((p) => !p || Object.keys(p).length === 0);
+
+/**
+ * After signing in on a fresh device: when the language picked from the phone has
+ * no progress but another has, learn that one instead, so the player finds their
+ * stars where they left them. Returns true when it switched.
+ */
+export function followProgress(s: State, available: (lang: string) => boolean): boolean {
+  const size = (lang: string) => Object.keys(s.progress[lang] ?? {}).length;
+  if (size(s.learn)) return false;
+  const best = Object.keys(s.progress).filter(available).sort((a, b) => size(b) - size(a))[0];
+  if (!best || !size(best)) return false;
+  s.learn = best;
+  return true;
+}
+
 export function progressOf(s: State): Progress {
   return (s.progress[s.learn] ??= {});
 }

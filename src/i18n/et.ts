@@ -95,6 +95,8 @@ export const et: LanguagePack = {
     searchSuggest: 'Soovita see lisada',
     searchMailBody: 'Palun lisa SailLingosse termin „{q}".',
     updated: 'SailLingo uuendati versioonile {n}',
+    learnSwitched: 'Õpid nüüd termineid keeles: {lang}',
+    switchBack: 'Tagasi: {lang}',
     partnerWrite: 'Kirjuta:',
     at: '[ät]',
     partnerSubject: 'SailLingo partnerlus',
