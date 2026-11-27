@@ -70,3 +70,10 @@ test('search finds terms despite typos and missing accents', async () => {
   assert.deepEqual(search('kambüüüs', langs), []); // not in the game (yet)
   assert.deepEqual(search('k', langs), []); // too short to search
 });
+
+test('search finds a part by the action it is used for', async () => {
+  const { search } = await import('../src/search.ts');
+  const { et } = await import('../src/i18n/et.ts');
+  const { en } = await import('../src/i18n/en.ts');
+  for (const q of ['rehvimine', 'rehvima', 'rehv', 'rehvimin', 'reefing']) assert.equal(search(q, [et, en])[0]?.term, 'reefpoints', q);
+});

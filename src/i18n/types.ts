@@ -11,6 +11,8 @@ export interface TermText {
   alt?: string[];
   /** further answers accepted when typed but never shown: spelling variants, singular forms, loose or unverified words */
   accept?: string[];
+  /** related words that find this term in the search but are not its name, e.g. the action: "reefing" for reef points */
+  find?: string[];
   /** one short sentence explaining what it is - try not to use the name itself */
   desc: string;
 }

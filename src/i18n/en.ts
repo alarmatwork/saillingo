@@ -315,7 +315,7 @@ export const en: LanguagePack = {
     leech: { name: 'leech', alt: ['leach'], desc: 'The back edge of a sail.' },
     foot: { name: 'foot', desc: 'The bottom edge of a sail.' },
     battens: { name: 'battens', alt: ['batten', 'sail battens'], desc: 'Stiff strips slid into pockets in the sail to hold its shape.' },
-    reefpoints: { name: 'reef points', alt: ['reef point', 'reefing points', 'reef', 'reefs'], desc: 'The row of ties used to make the sail smaller in strong wind.' },
+    reefpoints: { name: 'reef points', alt: ['reef point', 'reefing points', 'reef', 'reefs'], find: ['reefing'], desc: 'The row of ties used to reef the sail: to make it smaller in strong wind.' },
     telltales: { name: 'telltales', alt: ['tell-tales', 'telltale', 'tell tales'], desc: 'Light strips of yarn on the sail that show how the air flows over it.' },
     gooseneck: { name: 'gooseneck', alt: ['goose neck'], desc: 'The swivelling joint that connects the boom to the mast.' },
     toppinglift: { name: 'topping lift', alt: ['toppinglift', 'boom lift'], desc: 'The line from the mast top that holds up the end of the boom.' },

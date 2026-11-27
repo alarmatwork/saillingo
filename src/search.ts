@@ -53,6 +53,11 @@ export function search(query: string, langs: LanguagePack[], max = 20): Hit[] {
         const scored = s === null ? null : name === t.name ? s : s + 0.5;
         if (scored !== null && (best === null || scored < best)) best = scored;
       }
+      // related words (e.g. the action a part is used for) rank below every real name
+      for (const word of t.find ?? []) {
+        const s = nameScore(word, q);
+        if (s !== null && (best === null || s + 1 < best)) best = s + 1;
+      }
       if (best === null && q.length >= 4 && normalize(t.desc).includes(q)) best = 6;
     }
     if (best !== null) hits.push({ term, topic: lessonOf(term).topic, score: best });
