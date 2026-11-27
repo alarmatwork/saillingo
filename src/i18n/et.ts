@@ -327,7 +327,7 @@ export const et: LanguagePack = {
     reefpoints: { name: 'rehvpentslid', accept: ['rehvpentsel', 'rehvseisingud', 'rehvid', 'rehvnippel', 'rehvniplid'], find: ['rehvimine', 'rehvima', 'rehv', 'rehviaas', 'rehviaasad'], desc: 'Rida nööre purjel, millega tugeva tuulega purjepinda vähendatakse ehk purje rehvitakse.' },
     telltales: { name: 'tuuleniidid', alt: ['niidid', 'nõidurid'], accept: ['tuuleniit', 'nõidur'], desc: 'Kerged lõngajupid purjel, mis näitavad, kuidas õhk mööda purje voolab.' },
     gooseneck: { name: 'poomipöörel', accept: ['poomi liigend', 'lümmel', 'poomi kannaliigend'], desc: 'Liigend, mis ühendab poomi mastiga.' },
-    toppinglift: { name: 'topenant', alt: ['poomitirk', 'tirk'], desc: 'Ots mastitipust, mis hoiab üleval poomi tagumist otsa.' },
+    toppinglift: { name: 'poomitirk', alt: ['topenant', 'tirk'], accept: ['poomitürk'], desc: 'Ots mastitipust, mis hoiab üleval poomi tagumist otsa.' },
     halyard: { name: 'vall', alt: ['fall', 'purjevall'], accept: ['groodifall', 'groodivall'], desc: 'Ots, millega puri masti heisatakse.' },
     mainsheet: { name: 'grootsoot', alt: ['suurpurje soot'], accept: ['groodisoot', 'grootpurje soot'], desc: 'Ots, millega poomi sisse tõmmatakse ja välja lastakse.' },
     jibsheet: { name: 'fokasoot', alt: ['eespurje soot'], accept: ['foka soot', 'kliiversoot', 'kliivri soot'], desc: 'Ots, millega tõmmatakse sisse eespurje tagumist nurka.' },
