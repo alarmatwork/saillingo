@@ -736,7 +736,8 @@ function runSession(sess: Session, lesson: Lesson | null, test = false) {
           : e.by === 'translation'
             ? [h('h2', null, t('qTranslate', { lang: LEARN().name })), h('div', { class: 'quote big' }, termHint(e.term))]
             : [h('h2', null, t('qDefine')), h('div', { class: 'quote' }, termDesc(e.term))];
-        body.replaceChildren(...prompt, ...(view ? [view.el] : []), list.el);
+        // like every exercise: the picture, then the question, then the task and the answers
+        body.replaceChildren(...(view ? [view.el] : []), ...prompt, list.el);
         noButton();
         break;
       }
@@ -755,8 +756,8 @@ function runSession(sess: Session, lesson: Lesson | null, test = false) {
             verdict(e, ok ? 'ok' : 'bad', e.term);
           },
         });
-        // like every exercise: the question, the picture, then the task (what to find)
-        body.replaceChildren(h('h2', null, isSituation(e.term) ? t('qFindRule') : t('qFind')), view.el, h('div', { class: `quote big${isSituation(e.term) ? ' rule' : ''}` }, termName(e.term)));
+        // like every exercise: the picture, then the question, then the task (what to find)
+        body.replaceChildren(view.el, h('h2', null, isSituation(e.term) ? t('qFindRule') : t('qFind')), h('div', { class: `quote big${isSituation(e.term) ? ' rule' : ''}` }, termName(e.term)));
         noButton();
         break;
       }
@@ -770,8 +771,8 @@ function runSession(sess: Session, lesson: Lesson | null, test = false) {
           verdict(e, r === 'exact' ? 'ok' : r === 'close' ? 'close' : r === 'form' ? 'form' : 'bad', e.term);
         };
         input.addEventListener('input', () => { check.disabled = !input.value.trim(); });
-        // like every exercise: the question, the picture, then the task and the answer
-        body.replaceChildren(h('h2', null, t('qType')), picture(e.term, true).el,
+        // like every exercise: the picture, then the question, then the task and the answer
+        body.replaceChildren(picture(e.term, true).el, h('h2', null, t('qType')),
           bilingual() ? h('div', { class: 'quote' }, `${UI().name}: ${termHint(e.term)}`) : h('div', { class: 'quote' }, termDesc(e.term)),
           input, button(t('skip'), () => submit(true), 'btn link'));
         const check = checkButton(() => submit());
@@ -792,7 +793,7 @@ function runSession(sess: Session, lesson: Lesson | null, test = false) {
         };
         const view = situationView(e.term, { onChoose: answer });
         const both = h('button', { type: 'button', class: 'opt both', onclick: () => answer('both') }, `⇄ ${t('both')}`);
-        body.replaceChildren(h('h2', null, t('qGiveWay')), view.el, both);
+        body.replaceChildren(view.el, h('h2', null, t('qGiveWay')), both);
         noButton();
         break;
       }

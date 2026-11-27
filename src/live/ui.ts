@@ -126,6 +126,12 @@ export function createLive(d: LiveDeps) {
   }
 
   // ---- shared pieces ------------------------------------------------------------------
+  /** Like the lessons: a picture comes before the question, a written clue after it. */
+  function askParts(q: Question, parts: { prompt: string; media: Node }) {
+    const prompt = h('h2', { class: 'prompt' }, parts.prompt);
+    const media = h('div', { class: `media ${q.kind}` }, parts.media);
+    return q.kind === 'define' ? [prompt, media] : [media, prompt];
+  }
   /** The question as shown on every device: what is asked, and the picture or description. */
   function questionParts(q: Question, t: ReturnType<typeof text>, descLang: string) {
     const situation = isSituation(q.term);
@@ -357,8 +363,7 @@ export function createLive(d: LiveDeps) {
           return [
             h('div', { class: 'qhead' }, heading(ph),
               (live.count = h('small', { class: 'count' }, t('liveAnswered', { n: players.filter((p) => p.a?.q === ph.q).length, total: players.length })))),
-            h('h2', { class: 'prompt' }, parts.prompt),
-            h('div', { class: `media ${q.kind}` }, parts.media),
+            ...askParts(q, parts),
             tiles(q, { reveal, counts }),
             reveal ? h('div', { class: 'lv-timer off' }) : timer(),
           ];
@@ -383,7 +388,7 @@ export function createLive(d: LiveDeps) {
           const parts = questionParts(q, t, d.ui());
           const answered = p.a?.q === ph.q;
           return [
-            score(), heading(ph), h('h2', { class: 'prompt' }, parts.prompt), h('div', { class: `media ${q.kind}` }, parts.media),
+            score(), heading(ph), ...askParts(q, parts),
             answered ? tiles(q, { chosen: p.a!.c }) : tiles(q, { onPick: (i) => answer(ph, i) }),
             answered ? h('p', { class: 'hint center' }, `✔ ${t('liveLocked')}`) : null,
             timer(),
