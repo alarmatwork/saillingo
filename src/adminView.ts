@@ -1,6 +1,6 @@
 // The admin page (#admin): simple numbers and bar charts for a chosen period.
 // English only: it is seen by the site's owner, not by players.
-import { Forbidden, dayKey, fill, loadGames, loadUsers, loadVisitToken, loadVisits, saveVisitToken, summarize, type Bucket, type GameRow, type UserRow, type Visits } from './admin.ts';
+import { Forbidden, loadGames, loadUsers, loadVisitToken, loadVisits, saveVisitToken, summarize, visitorsBy, type Bucket, type GameRow, type UserRow, type Visits } from './admin.ts';
 import { h } from './dom.ts';
 
 export interface AdminDeps {
@@ -102,17 +102,16 @@ export function createAdmin(d: AdminDeps) {
     const now = Date.now();
     const s = summarize(users, games, days, now);
     const weekly = days > 45;
-    const visitDays = visits ? [...visits.byDay].filter(([day]) => day >= dayKey(s.since)) : [];
-    // visits come per day, so today's are one figure (counted at noon) rather than a chart by the hour
-    const visitsBy = fill(s.empty, visitDays.map(([day]) => new Date(`${day}T12:00:00`).getTime()), visitDays.map(([, n]) => n));
+    const visitsBy = visits ? visitorsBy(s.empty, visits, days === 1, now) : null;
     const tokenInput = h('input', { type: 'password', placeholder: 'GoatCounter API token', autocomplete: 'off' });
     page(
       h('div', { class: 'seg' }, PERIODS.map((p) => h('button', { type: 'button', class: p === days ? 'on' : '', onclick: () => { days = p; screen(); } }, p === 1 ? 'Today' : p === 365 ? '1 year' : `${p} d`))),
+      !visits && tokenCard(tokenInput, now),
+      visitsBy && h('div', { class: 'stats hero' }, tile(visitsBy.reduce((n, b) => n + b.value, 0), 'visitors (everyone)')),
       h('div', { class: 'stats' },
-        tile(s.signups, 'new sign-ups'), tile(s.active, 'active accounts'), tile(s.games, 'games created'),
-        visits ? tile(visitsBy.reduce((n, b) => n + b.value, 0), 'visits') : null),
+        tile(s.signups, 'new sign-ups'), tile(s.active, 'active accounts'), tile(s.games, 'games created')),
       h('div', { class: 'stats' }, tile(s.totalUsers, 'accounts in all'), tile(s.started, 'games started'), tile(s.players, 'players in games')),
-      visits && days > 1 && barChart('Visits (everyone, signed in or not)', visitsBy, weekly),
+      visitsBy && barChart('Visitors (everyone, signed in or not)', visitsBy, weekly),
       barChart('New sign-ups', s.signupsBy, weekly),
       barChart('Active accounts (by last activity)', s.activeBy, weekly),
       barChart('Party games created', s.gamesBy, weekly),
@@ -120,9 +119,17 @@ export function createAdmin(d: AdminDeps) {
         h('table', null, visits.events.slice(0, 15).map((e) => h('tr', null, h('td', null, e.name), h('td', null, String(e.count)))))),
       h('section', { class: 'settings' },
         h('b', null, 'Notes'),
-        h('p', { class: 'hint' }, 'Accounts are players who signed in. "Active" counts an account on the day it last saved progress, so one account appears once. Sign-up dates are recorded from version 59 on; older accounts are only in the total. Players who do not sign in appear only in visits.'),
-        !visits && h('p', { class: 'hint' }, 'To see visits here, create an API token in GoatCounter (Settings → API) with the "Read statistics" permission and save it:'),
-        !visits && h('form', { class: 'joinrow', onsubmit: async (e: Event) => {
+        h('p', { class: 'hint' }, 'Accounts are players who signed in. "Active" counts an account on the day it last saved progress, so one account appears once. Sign-up dates are recorded from version 59 on; older accounts are only in the total. Visitors come from GoatCounter: everyone who opened SailLingo, counted once per day, signed in or not.'),
+        h('button', { type: 'button', class: 'btn ghost small', onclick: () => { loadedFor = ''; screen(); } }, '↻ Refresh')));
+  }
+
+  function tokenCard(tokenInput: HTMLInputElement, now: number) {
+    return h('section', { class: 'settings visitorsetup' },
+        h('b', null, '👀 See all visitors'),
+        h('p', { class: 'hint' }, goatToken
+          ? 'GoatCounter did not answer with the saved token. Paste a new one:'
+          : 'The numbers below only count players who signed in. To also see everyone who opens SailLingo, paste a GoatCounter API token (goatcounter.com → Settings → API → New token, with "Read statistics"):'),
+        h('form', { class: 'joinrow', onsubmit: async (e: Event) => {
           e.preventDefault();
           const value = tokenInput.value.trim(), token = await d.token();
           if (!value || !token) return;
@@ -135,8 +142,7 @@ export function createAdmin(d: AdminDeps) {
           } catch {
             d.toast('GoatCounter did not accept this token.');
           }
-        } }, tokenInput, h('button', { type: 'submit', class: 'btn primary small' }, 'Save')),
-        h('button', { type: 'button', class: 'btn ghost small', onclick: () => { loadedFor = ''; screen(); } }, '↻ Refresh')));
+        } }, tokenInput, h('button', { type: 'submit', class: 'btn primary small' }, 'Save')));
   }
 
   return { screen, draw };

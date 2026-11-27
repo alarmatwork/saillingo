@@ -282,4 +282,9 @@ test('admin statistics: periods, buckets and counts', async () => {
   const today = summarize([...users, { created: now - 3_600_000, updated: now, xp: 1 }], games, 1, now);
   assert.deepEqual([today.signups, today.active, today.games, today.signupsBy.length], [1, 2, 0, 24]);
   assert.equal(today.signupsBy[14].value, 1);
+  const { visitorsBy, dayKey } = await import('../src/admin.ts');
+  const hours = new Array(24).fill(0); hours[9] = 5; hours[14] = 2;
+  const v = { byDay: new Map([[dayKey(now), 7], [dayKey(now - DAY), 4], [dayKey(now - 10 * DAY), 9]]), byHour: new Map([[dayKey(now), hours]]) };
+  assert.deepEqual(visitorsBy(today.empty, v, true, now).filter((b) => b.value).map((b) => [b.label, b.value]), [['9:00', 5], ['14:00', 2]]);
+  assert.deepEqual(visitorsBy(s7.empty, v, false, now).map((b) => b.value), [0, 0, 0, 0, 0, 4, 7]);
 });

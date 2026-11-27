@@ -473,3 +473,5 @@ textarea.answer { resize: vertical; font-family: inherit; }
 .admin .uid { display: block; word-break: break-all; background: var(--bg); padding: 8px; border-radius: 8px; user-select: all; }
 .admin .joinrow { display: flex; gap: 8px; }
 .admin .joinrow input { flex: 1; min-width: 0; border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; font: inherit; background: var(--card); color: var(--ink); }
+.admin .visitorsetup { border-color: var(--brand); }
+.admin .stats.hero b { font-size: 1.6rem; color: var(--brand); }

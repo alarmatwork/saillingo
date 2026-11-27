@@ -61,7 +61,13 @@ export async function loadVisitToken(token: string): Promise<string> {
 export const saveVisitToken = (token: string, goatToken: string) =>
   call(`${docs()}/admin/settings`, token, { fields: { goatToken: { stringValue: goatToken } } }, 'PATCH');
 
-export interface Visits { byDay: Map<string, number>; total: number; events: { name: string; count: number }[] }
+export interface Visits {
+  byDay: Map<string, number>;
+  /** visitors per hour, for each day ("2026-11-27" -> 24 numbers) */
+  byHour: Map<string, number[]>;
+  total: number;
+  events: { name: string; count: number }[];
+}
 /** Visits per day (pages only) and how often each tracked action happened. */
 export async function loadVisits(goatToken: string, since: number, until: number): Promise<Visits> {
   const iso = (t: number) => new Date(Math.floor(t / 3_600_000) * 3_600_000).toISOString();
@@ -69,8 +75,9 @@ export async function loadVisits(goatToken: string, since: number, until: number
     headers: { authorization: `Bearer ${goatToken}`, 'content-type': 'application/json' },
   });
   if (!res.ok) throw new Error(`GoatCounter: ${res.status}`);
-  const data = (await res.json()) as { hits?: { count: number; event: boolean; path: string; stats?: { day: string; daily: number }[] }[] };
+  const data = (await res.json()) as { hits?: { count: number; event: boolean; path: string; stats?: { day: string; daily: number; hourly?: number[] }[] }[] };
   const byDay = new Map<string, number>();
+  const byHour = new Map<string, number[]>();
   let total = 0;
   const events: Visits['events'] = [];
   for (const hit of data.hits ?? []) {
@@ -79,10 +86,15 @@ export async function loadVisits(goatToken: string, since: number, until: number
       continue;
     }
     total += hit.count;
-    for (const s of hit.stats ?? []) byDay.set(s.day, (byDay.get(s.day) ?? 0) + (s.daily ?? 0));
+    for (const s of (hit.stats ?? []) as { day: string; daily: number; hourly?: number[] }[]) {
+      byDay.set(s.day, (byDay.get(s.day) ?? 0) + (s.daily ?? 0));
+      const hours = byHour.get(s.day) ?? new Array<number>(24).fill(0);
+      (s.hourly ?? []).forEach((n, i) => { hours[i] += n || 0; });
+      byHour.set(s.day, hours);
+    }
   }
   events.sort((a, b) => b.count - a.count);
-  return { byDay, total, events };
+  return { byDay, byHour, total, events };
 }
 
 // ---- turning rows into the figures on the page (no network: tested) ------------------
@@ -121,6 +133,20 @@ export function fill(empty: Bucket[], times: number[], weights?: number[]): Buck
     }
   });
   return out;
+}
+
+/**
+ * GoatCounter visitors spread over the buckets: per hour for today, otherwise
+ * per day (counted at noon, so a day never lands in the wrong bucket).
+ */
+export function visitorsBy(empty: Bucket[], v: Pick<Visits, 'byDay' | 'byHour'>, today: boolean, now: number): Bucket[] {
+  if (today) {
+    const hours = v.byHour.get(dayKey(now)) ?? [];
+    return empty.map((b, i) => ({ ...b, value: hours[i] ?? 0 }));
+  }
+  const since = dayKey(empty[0].start);
+  const days = [...v.byDay].filter(([day]) => day >= since);
+  return fill(empty, days.map(([day]) => new Date(`${day}T12:00:00`).getTime()), days.map(([, n]) => n));
 }
 
 export function summarize(users: UserRow[], games: GameRow[], days: number, now: number) {

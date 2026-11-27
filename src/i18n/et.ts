@@ -317,7 +317,7 @@ export const et: LanguagePack = {
     leech: { name: 'ahterliik', alt: ['tagaliik'], desc: 'Purje tagumine serv.' },
     foot: { name: 'alaliik', alt: ['poomiliik'], desc: 'Purje alumine serv.' },
     battens: { name: 'purjeliistud', alt: ['liistud', 'latid'], accept: ['purjelatid', 'purjeliist', 'liist'], desc: 'Jäigad ribad purje taskutes, mis hoiavad purje kuju.' },
-    reefpoints: { name: 'rehvpentslid', accept: ['rehvpentsel', 'rehvseisingud', 'rehvid'], find: ['rehvimine', 'rehvima', 'rehv'], desc: 'Rida nööre purjel, millega tugeva tuulega purjepinda vähendatakse ehk purje rehvitakse.' },
+    reefpoints: { name: 'rehvpentslid', accept: ['rehvpentsel', 'rehvseisingud', 'rehvid'], find: ['rehvimine', 'rehvima', 'rehv', 'rehviaas', 'rehviaasad'], desc: 'Rida nööre purjel, millega tugeva tuulega purjepinda vähendatakse ehk purje rehvitakse.' },
     telltales: { name: 'tuuleniidid', alt: ['niidid'], accept: ['tuuleniit'], desc: 'Kerged lõngajupid purjel, mis näitavad, kuidas õhk mööda purje voolab.' },
     gooseneck: { name: 'poomipöörel', accept: ['poomi liigend'], desc: 'Liigend, mis ühendab poomi mastiga.' },
     toppinglift: { name: 'topenant', alt: ['poomitirk', 'tirk'], desc: 'Ots mastitipust, mis hoiab üleval poomi tagumist otsa.' },
