@@ -16,7 +16,7 @@ import { sendMessage } from './cloud/messages.ts';
 import { liveAvailable, liveOnHome } from './live/backend.ts';
 import { createLive } from './live/ui.ts';
 import { createAdmin } from './adminView.ts';
-import { installWay, onInstallChange, promptInstall } from './install.ts';
+import { installWay, isStandalone, onInstallChange, onInstalled, promptInstall } from './install.ts';
 import { MASTERED, boxOf, currentStreak, defaultState, lessonStars, loadState, openTopic, practiceTerms, progressOf, recordSession, recordTest, saveState, unlockNext } from './store.ts';
 
 /** how long a correct answer stays on screen before the next exercise appears */
@@ -136,10 +136,12 @@ function button(label: string, onclick: () => void, cls = 'btn primary', disable
 // ---- home -------------------------------------------------------------------
 const IOS_SHARE_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M6 11H5v10h14V11h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
+let noteCounted = false;
 /** Closeable note at the top of the home page: add SailLingo to the home screen. */
 function installNote() {
   const way = st.installDismissed ? null : installWay();
   if (!way) return null;
+  if (!noteCounted) { noteCounted = true; track(`install-note/${way}`); }
   const close = () => { st.installDismissed = true; saveState(st); track(`install-close/${way}`); document.querySelector('.install')?.remove(); };
   const how = way === 'ios'
     ? h('p', { class: 'how', html: t('installIos', { share: `<span class="shareicon">${IOS_SHARE_ICON}</span>` }) })
@@ -154,7 +156,7 @@ function installNote() {
       how,
       way === 'prompt' && button(`📲 ${t('installButton')}`, async () => {
         track('install-prompt');
-        if (await promptInstall()) { track('install-done'); document.querySelector('.install')?.remove(); }
+        if (await promptInstall()) { track('install-yes'); document.querySelector('.install')?.remove(); }
       }, 'btn primary small')),
     h('button', { type: 'button', class: 'x', 'aria-label': t('close'), title: t('close'), onclick: close }, '✕'));
 }
@@ -916,6 +918,15 @@ function applyUpdateWhenSafe() {
 
 route();
 initAnalytics();
+// installs: Chrome and Edge report them; iPhone does not, so the first start from
+// the home screen is counted too (an installed iPhone app starts with empty storage)
+onInstalled(() => track('installed'));
+if (isStandalone()) {
+  track('app-open');
+  try {
+    if (!localStorage.getItem('saillingo.appOpened')) { localStorage.setItem('saillingo.appOpened', '1'); track('app-first-open'); }
+  } catch { /* private mode */ }
+}
 try {
   const from = sessionStorage.getItem(UPDATED_FROM);
   sessionStorage.removeItem(UPDATED_FROM);

@@ -14,13 +14,19 @@ export function initAnalytics(): void {
   s.async = true;
   s.src = 'https://gc.zgo.at/count.js';
   s.dataset.goatcounter = `https://${GOATCOUNTER_CODE}.goatcounter.com/count`;
+  s.onload = () => { const q = waiting.splice(0); q.forEach(track); };
   document.head.append(s);
 }
+
+/** actions recorded before the counter script has loaded */
+const waiting: string[] = [];
 
 /** Records something the player did, e.g. track('lesson-done/hull1'). Never throws. */
 export function track(name: string): void {
   try {
-    (window as { goatcounter?: GoatCounter }).goatcounter?.count?.({ path: name, title: name, event: true });
+    const gc = (window as { goatcounter?: GoatCounter }).goatcounter;
+    if (!gc?.count) { if (GOATCOUNTER_CODE && waiting.length < 20) waiting.push(name); return; }
+    gc.count({ path: name, title: name, event: true });
   } catch {
     /* counting must never break the game */
   }

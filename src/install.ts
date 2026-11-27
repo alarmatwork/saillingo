@@ -9,6 +9,9 @@ interface InstallPrompt extends Event {
 
 let deferred: InstallPrompt | null = null;
 let installed = false;
+const installedListeners = new Set<() => void>();
+/** Calls `f` when the browser reports that the app was installed (Chrome, Edge; not iPhone). */
+export const onInstalled = (f: () => void) => { installedListeners.add(f); };
 const listeners = new Set<() => void>();
 const changed = () => listeners.forEach((f) => f());
 
@@ -18,7 +21,7 @@ if (typeof window !== 'undefined') {
     deferred = e as InstallPrompt;
     changed();
   });
-  window.addEventListener('appinstalled', () => { installed = true; deferred = null; changed(); });
+  window.addEventListener('appinstalled', () => { installed = true; deferred = null; changed(); installedListeners.forEach((f) => f()); });
 }
 
 /** Already running as an installed app. */

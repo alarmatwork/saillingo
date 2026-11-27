@@ -99,6 +99,24 @@ export async function loadVisits(goatToken: string, since: number, until: number
 
 // ---- turning rows into the figures on the page (no network: tested) ------------------
 
+/** The "add to home screen" steps, from the tracked actions (each name may have a /<browser> ending). */
+export const INSTALL_STEPS = [
+  ['install-note', 'Saw the note'],
+  ['install-close', 'Closed the note'],
+  ['install-prompt', 'Tapped the install button'],
+  ['install-yes', 'Said yes in the install window'],
+  ['installed', 'Installed (Android/Chrome reports it)'],
+  ['app-first-open', 'First start from the home screen (any phone)'],
+  ['app-open', 'Starts from the home screen'],
+] as const;
+export function installFunnel(events: Visits['events']): { label: string; count: number; ways: string }[] {
+  return INSTALL_STEPS.map(([name, label]) => {
+    const hits = events.filter((e) => e.name === name || e.name.startsWith(`${name}/`));
+    const ways = hits.filter((e) => e.name.includes('/')).map((e) => `${e.name.split('/')[1]} ${e.count}`).join(', ');
+    return { label, count: hits.reduce((n, e) => n + e.count, 0), ways };
+  });
+}
+
 const dayStart = (t: number) => new Date(new Date(t).getFullYear(), new Date(t).getMonth(), new Date(t).getDate()).getTime();
 export const dayKey = (t: number) => {
   const d = new Date(t);

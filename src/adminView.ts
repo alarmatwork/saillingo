@@ -1,6 +1,6 @@
 // The admin page (#admin): simple numbers and bar charts for a chosen period.
 // English only: it is seen by the site's owner, not by players.
-import { Forbidden, loadGames, loadUsers, loadVisitToken, loadVisits, saveVisitToken, summarize, visitorsBy, type Bucket, type GameRow, type UserRow, type Visits } from './admin.ts';
+import { Forbidden, installFunnel, loadGames, loadUsers, loadVisitToken, loadVisits, saveVisitToken, summarize, visitorsBy, type Bucket, type GameRow, type UserRow, type Visits } from './admin.ts';
 import { h } from './dom.ts';
 
 export interface AdminDeps {
@@ -115,6 +115,9 @@ export function createAdmin(d: AdminDeps) {
       barChart('New sign-ups', s.signupsBy, weekly),
       barChart('Active accounts (by last activity)', s.activeBy, weekly),
       barChart('Party games created', s.gamesBy, weekly),
+      visits && h('section', { class: 'settings' }, h('b', null, '📲 Home screen app (last 12 months)'),
+        h('table', null, installFunnel(visits.events).map((r) => h('tr', null, h('td', null, r.label, r.ways && h('small', null, ` (${r.ways})`)), h('td', null, String(r.count))))),
+        h('p', { class: 'hint' }, 'iPhones do not report installs, so "first start from the home screen" is the best count of installs on all phones. Counting started on 27 Nov 2026.')),
       visits && visits.events.length > 0 && h('section', { class: 'settings' }, h('b', null, 'Actions (last 12 months)'),
         h('table', null, visits.events.slice(0, 15).map((e) => h('tr', null, h('td', null, e.name), h('td', null, String(e.count)))))),
       h('section', { class: 'settings' },

@@ -288,3 +288,18 @@ test('admin statistics: periods, buckets and counts', async () => {
   assert.deepEqual(visitorsBy(today.empty, v, true, now).filter((b) => b.value).map((b) => [b.label, b.value]), [['9:00', 5], ['14:00', 2]]);
   assert.deepEqual(visitorsBy(s7.empty, v, false, now).map((b) => b.value), [0, 0, 0, 0, 0, 4, 7]);
 });
+
+test('admin: home screen install steps are added up across browsers', async () => {
+  const { installFunnel } = await import('../src/admin.ts');
+  const rows = installFunnel([
+    { name: 'install-note/ios', count: 7 }, { name: 'install-note/prompt', count: 3 }, { name: 'install-yes', count: 2 },
+    { name: 'installed', count: 2 }, { name: 'app-first-open', count: 4 }, { name: 'app-open', count: 30 }, { name: 'lesson-start/hull1', count: 50 },
+  ]);
+  const by = Object.fromEntries(rows.map((r) => [r.label, r]));
+  assert.equal(by['Saw the note'].count, 10);
+  assert.equal(by['Saw the note'].ways, 'ios 7, prompt 3');
+  assert.equal(by['Installed (Android/Chrome reports it)'].count, 2);
+  assert.equal(by['First start from the home screen (any phone)'].count, 4);
+  assert.equal(by['Starts from the home screen'].count, 30); // app-first-open is not counted as app-open
+  assert.equal(by['Closed the note'].count, 0);
+});
