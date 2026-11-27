@@ -328,7 +328,7 @@ export const et: LanguagePack = {
     telltales: { name: 'tuuleniidid', alt: ['niidid', 'nõidurid'], accept: ['tuuleniit', 'nõidur'], desc: 'Kerged lõngajupid purjel, mis näitavad, kuidas õhk mööda purje voolab.' },
     gooseneck: { name: 'poomipöörel', accept: ['poomi liigend', 'lümmel', 'poomi kannaliigend'], desc: 'Liigend, mis ühendab poomi mastiga.' },
     toppinglift: { name: 'topenant', alt: ['poomitirk', 'tirk'], desc: 'Ots mastitipust, mis hoiab üleval poomi tagumist otsa.' },
-    halyard: { name: 'fall', alt: ['vall', 'purjevall'], accept: ['groodifall'], desc: 'Ots, millega puri masti heisatakse.' },
+    halyard: { name: 'vall', alt: ['fall', 'purjevall'], accept: ['groodifall', 'groodivall'], desc: 'Ots, millega puri masti heisatakse.' },
     mainsheet: { name: 'grootsoot', alt: ['suurpurje soot'], accept: ['groodisoot', 'grootpurje soot'], desc: 'Ots, millega poomi sisse tõmmatakse ja välja lastakse.' },
     jibsheet: { name: 'fokasoot', alt: ['eespurje soot'], accept: ['foka soot', 'kliiversoot', 'kliivri soot'], desc: 'Ots, millega tõmmatakse sisse eespurje tagumist nurka.' },
     vang: { name: 'kontrasoot', alt: ['poomipinguti'], desc: 'Talid poomi ja mastijala vahel, mis ei lase poomil üles tõusta.' },
