@@ -318,7 +318,7 @@ export const et: LanguagePack = {
     foot: { name: 'alaliik', alt: ['poomiliik'], desc: 'Purje alumine serv.' },
     battens: { name: 'purjeliistud', alt: ['liistud', 'latid'], accept: ['purjelatid', 'purjeliist', 'liist'], desc: 'Jäigad ribad purje taskutes, mis hoiavad purje kuju.' },
     reefpoints: { name: 'rehvpentslid', accept: ['rehvpentsel', 'rehvseisingud', 'rehvid'], find: ['rehvimine', 'rehvima', 'rehv', 'rehviaas', 'rehviaasad'], desc: 'Rida nööre purjel, millega tugeva tuulega purjepinda vähendatakse ehk purje rehvitakse.' },
-    telltales: { name: 'tuuleniidid', alt: ['niidid'], accept: ['tuuleniit'], desc: 'Kerged lõngajupid purjel, mis näitavad, kuidas õhk mööda purje voolab.' },
+    telltales: { name: 'tuuleniidid', alt: ['niidid', 'nõidurid'], accept: ['tuuleniit', 'nõidur'], desc: 'Kerged lõngajupid purjel, mis näitavad, kuidas õhk mööda purje voolab.' },
     gooseneck: { name: 'poomipöörel', accept: ['poomi liigend'], desc: 'Liigend, mis ühendab poomi mastiga.' },
     toppinglift: { name: 'topenant', alt: ['poomitirk', 'tirk'], desc: 'Ots mastitipust, mis hoiab üleval poomi tagumist otsa.' },
     halyard: { name: 'fall', alt: ['vall', 'purjevall'], accept: ['groodifall'], desc: 'Ots, millega puri masti heisatakse.' },
