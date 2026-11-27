@@ -39,6 +39,14 @@ export const DETAILS: Partial<Record<TermId, string>> = {
     <path d="M26 112 Q100 96 174 112 Q176 126 162 128 H38 Q24 126 26 112 Z" fill="#eef2f5" stroke="${DARK}" stroke-width="3" stroke-linejoin="round"/>
     <path d="M0 170 L70 136 L160 106 M158 106 Q182 114 156 130 L46 106 Q20 114 46 130 L150 110" fill="none" stroke="${ROPE}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>`,
 
+  // the steering wheel seen from behind, standing on its pedestal in the cockpit
+  wheel: `${SKY}<rect y="168" width="200" height="32" fill="#b9935c"/><path d="M0 168 H200" stroke="#7a5a30" stroke-width="3"/>
+    <path d="M88 170 L92 104 H108 L112 170 Z" fill="${STEEL}" stroke="${DARK}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M100 30 V154 M38 92 H162 M56 48 L144 136 M144 48 L56 136" stroke="${LIGHT}" stroke-width="6" stroke-linecap="round"/>
+    <circle cx="100" cy="92" r="62" fill="none" stroke="${DARK}" stroke-width="11"/>
+    <circle cx="100" cy="92" r="62" fill="none" stroke="#5a6a78" stroke-width="3" stroke-dasharray="2 7"/>
+    <circle cx="100" cy="92" r="14" fill="${STEEL}" stroke="${DARK}" stroke-width="3"/><circle cx="100" cy="92" r="5" fill="${DARK}"/>`,
+
   // a delta anchor stowed in the bow roller, seen from the side
   anchor: `${SKY}<rect y="168" width="200" height="32" fill="#9fd0ea"/>
     <path d="M0 100 H92 L120 106 L104 176 H0 Z" fill="#fbfbf7" stroke="#22364a" stroke-width="3" stroke-linejoin="round"/>

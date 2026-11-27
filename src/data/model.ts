@@ -15,7 +15,7 @@ export const TERM_IDS = [
   'halyard', 'mainsheet', 'jibsheet', 'vang', 'outhaul',
   // deck & gear (top view)
   'port', 'starboard', 'beam', 'length', 'foredeck', 'anchor',
-  'hatch', 'companionway', 'winch', 'cleat', 'traveler', 'fender', 'mooringline',
+  'hatch', 'companionway', 'winch', 'cleat', 'traveler', 'fender', 'mooringline', 'wheel',
   // wind & points of sail
   'wind', 'windward', 'leeward', 'porttack', 'starboardtack', 'nogo',
   'closehauled', 'beamreach', 'broadreach', 'running', 'tacking', 'gybing',
@@ -83,7 +83,7 @@ const LESSON_LIST = [
   { id: 'sails1', topic: 'sails', terms: ['head', 'tack', 'clew', 'luff', 'leech', 'foot'] },
   { id: 'sails2', topic: 'sails', terms: ['battens', 'reefpoints', 'telltales', 'gooseneck', 'toppinglift'] },
   { id: 'sails3', topic: 'sails', terms: ['halyard', 'mainsheet', 'jibsheet', 'vang', 'outhaul'] },
-  { id: 'deck1', topic: 'deck', terms: ['port', 'starboard', 'beam', 'length', 'foredeck', 'anchor'] },
+  { id: 'deck1', topic: 'deck', terms: ['port', 'starboard', 'beam', 'length', 'foredeck', 'anchor', 'wheel'] },
   { id: 'deck2', topic: 'deck', terms: ['hatch', 'companionway', 'winch', 'cleat', 'traveler', 'fender', 'mooringline'] },
   { id: 'wind1', topic: 'wind', terms: ['wind', 'windward', 'leeward', 'porttack', 'starboardtack', 'nogo'] },
   { id: 'wind2', topic: 'wind', terms: ['closehauled', 'beamreach', 'broadreach', 'running', 'tacking', 'gybing'] },

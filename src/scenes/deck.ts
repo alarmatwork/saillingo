@@ -45,7 +45,9 @@ const art = `
 <g class="t-companionway"><rect x="374" y="436" width="52" height="44" rx="5" fill="#3a2a1c" stroke="#22303a" stroke-width="2.5"/><path d="M374 450 H426 M374 464 H426" stroke="#8a6238" stroke-width="3"/></g>
 
 <rect x="346" y="498" width="108" height="176" rx="12" fill="#b9935c" stroke="#7a5a30" stroke-width="2.5"/>
-<path d="M400 694 L400 606" stroke="#9c6428" stroke-width="7" stroke-linecap="round"/>
+<!-- this boat steers with a wheel (the side view shows one with a tiller); from above it is a thin bar across the cockpit -->
+<g class="t-wheel"><circle cx="400" cy="606" r="10" fill="#4c5d6e" stroke="#22303a" stroke-width="2"/><path d="M400 606 V630" stroke="#4c5d6e" stroke-width="6"/>
+  <rect x="352" y="626" width="96" height="10" rx="5" fill="#33414d" stroke="#22303a" stroke-width="2"/><circle cx="400" cy="631" r="6" fill="#c3ced8" stroke="#22303a" stroke-width="2"/></g>
 <g class="t-traveler"><rect x="350" y="511" width="100" height="8" rx="3" fill="#4c5d6e"/><rect x="391" y="506" width="18" height="18" rx="4" fill="#d62828" stroke="#22303a" stroke-width="2"/></g>
 <g class="t-winch" stroke="#3d4f5c" stroke-width="2.5"><circle cx="322" cy="548" r="13" fill="#c3ced8"/><circle cx="322" cy="548" r="5" fill="#6f8192"/><circle cx="478" cy="548" r="13" fill="#c3ced8"/><circle cx="478" cy="548" r="5" fill="#6f8192"/></g>
 <g class="t-cleat" fill="#eef2f5" stroke="#33414d" stroke-width="2.5"><rect x="317" y="664" width="9" height="26" rx="4"/><rect x="474" y="664" width="9" height="26" rx="4"/><rect x="396" y="132" width="9" height="22" rx="4"/></g>
@@ -64,6 +66,6 @@ export const deck: Scene = {
   spots: {
     port: [190, 400], starboard: [610, 400], beam: [400, 722], length: [712, 300], foredeck: [400, 232], anchor: [400, 100],
     hatch: [400, 182], companionway: [400, 458], winch: [478, 548], cleat: [478, 677], traveler: [400, 515],
-    fender: [270, 323], mooringline: [200, 694],
+    fender: [270, 323], mooringline: [200, 694], wheel: [400, 631],
   },
 };

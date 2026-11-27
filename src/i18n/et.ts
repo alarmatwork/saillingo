@@ -348,6 +348,7 @@ export const et: LanguagePack = {
     cleat: { name: 'knaap', accept: ['klamp'], desc: 'Kahe sarvega kinnitus, mille külge seotakse ots.' },
     traveler: { name: 'grootsoodi kelk', alt: ['grootsoodi tallas'], accept: ['soodikelk', 'traveller', 'traveler'], desc: 'Siin koos liuguriga, millega nihutatakse suure purje soodi kinnituskohta ühelt pardalt teisele.' },
     fender: { name: 'vender', desc: 'Pehme padi, mis riputatakse üle parda, et kaitsta keret kai ääres.' },
+    wheel: { name: 'rooliratas', accept: ['rooli ratas', 'tüüriratas'], desc: 'Suurema paadi kokpitis olev ratas, millega roolilehte pööratakse ja paati juhitakse. Väiksematel paatidel on selle asemel roolipinn.' },
     mooringline: { name: 'kinnitusots', alt: ['kinnitustross'], accept: ['kinnitusotsad', 'otsad', 'ots'], desc: 'Ots, millega paat seotakse kai külge.' },
 
     wind: { name: 'tuul', accept: ['tuule suund'], desc: 'Liikuv õhk, mis paati edasi viib; nool näitab, kuhu see puhub.' },

@@ -346,6 +346,7 @@ export const en: LanguagePack = {
     cleat: { name: 'cleat', desc: 'A fitting with two horns for tying off a rope.' },
     traveler: { name: 'traveler', alt: ['traveller', 'mainsheet traveler', 'mainsheet traveller'], desc: 'The track with a sliding car that moves the mainsheet from side to side.' },
     fender: { name: 'fender', desc: 'The soft cushion hung over the side to protect the hull at the dock.' },
+    wheel: { name: 'wheel', alt: ['steering wheel', 'helm'], desc: 'The steering wheel in the cockpit of a bigger boat, used to turn the rudder. Smaller boats have a tiller instead.' },
     mooringline: { name: 'mooring line', alt: ['dock line', 'dockline', 'mooring rope', 'mooring lines'], desc: 'The rope that ties the boat to the dock.' },
 
     wind: { name: 'wind', alt: ['true wind', 'wind direction'], desc: 'The moving air that drives the boat; the arrow shows where it blows.' },
