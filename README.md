@@ -80,8 +80,19 @@ Google, Apple or a link sent by email) and keep their progress across devices:
    rules_version = '2';
    service cloud.firestore {
      match /databases/{database}/documents {
+       // the accounts that may open the statistics page (#admin); the page shows an account's id
+       function isAdmin() {
+         return request.auth != null && request.auth.uid in ['PUT-YOUR-USER-ID-HERE'];
+       }
+
        match /users/{uid} {
          allow read, write: if request.auth != null && request.auth.uid == uid;
+         allow read: if isAdmin();
+       }
+
+       // settings of the statistics page (the GoatCounter API token)
+       match /admin/{doc} {
+         allow read, write: if isAdmin();
        }
        // partner enquiries and suggested terms: anyone may send one, nobody can read them from the app
        match /messages/{id} {
@@ -126,6 +137,13 @@ Google, Apple or a link sent by email) and keep their progress across devices:
    ```
 4. Project settings -> Your apps -> add a Web app and paste its
    `firebaseConfig` object into `src/cloud/config.ts`.
+
+### Statistics page
+
+`#admin` shows sign-ups, active accounts, party games and (with a GoatCounter
+API token) visits for a chosen period. Sign in, open the page, and it shows the
+id of your account; put that id into `isAdmin()` in the rules above. Nobody
+else can read the figures: the rules refuse the requests.
 
 ### Party quiz
 

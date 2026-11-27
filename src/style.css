@@ -450,3 +450,26 @@ textarea.answer { resize: vertical; font-family: inherit; }
 .live .quote.answer { display: flex; flex-direction: column; gap: 4px; }
 .live .quote.answer b { color: var(--brand); font-size: 1.15rem; }
 .live.bigscreen .tiles { margin-top: 0.8em; }
+
+/* ---- admin page ---- */
+.admin .seg { display: flex; border: 2px solid var(--line); border-radius: 12px; overflow: hidden; }
+.admin .seg button { flex: 1; border: 0; background: var(--card); color: var(--muted); padding: 9px 4px; font-weight: 700; }
+.admin .seg button + button { border-left: 2px solid var(--line); }
+.admin .seg button.on { background: var(--brand); color: #fff; }
+.admin .stats small { text-align: center; }
+.admin .chart svg { width: 100%; height: auto; display: block; touch-action: pan-y; }
+.admin .chart .bar { fill: var(--brand); }
+.admin .chart .hit { fill: transparent; }
+.admin .chart .hit:hover { fill: color-mix(in srgb, var(--brand) 12%, transparent); }
+.admin .chart .axis { stroke: var(--line); stroke-width: 1; }
+.admin .chart .lbl { fill: var(--muted); font-size: 9px; }
+.admin .charthead { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.admin .charthead span { font-size: 1.4rem; font-weight: 800; }
+.admin .tip { font-size: 0.85rem; color: var(--muted); text-align: center; min-height: 1.3em; }
+.admin details summary { color: var(--muted); font-size: 0.85rem; cursor: pointer; }
+.admin table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+.admin td { padding: 3px 0; border-bottom: 1px solid var(--line); }
+.admin td:last-child { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+.admin .uid { display: block; word-break: break-all; background: var(--bg); padding: 8px; border-radius: 8px; user-select: all; }
+.admin .joinrow { display: flex; gap: 8px; }
+.admin .joinrow input { flex: 1; min-width: 0; border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; font: inherit; background: var(--card); color: var(--ink); }

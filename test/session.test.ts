@@ -251,3 +251,31 @@ test('party quiz: questions, the shared clock and scoring', async () => {
   assert.equal(allAnswered([pl('a', 3), pl('b', 3), pl('gone', 0)], 3), true);
   assert.equal(allAnswered([pl('a', 3), pl('b', 2)], 3), false);
 });
+
+test('admin statistics: periods, buckets and counts', async () => {
+  const { buckets, fill, summarize } = await import('../src/admin.ts');
+  const DAY = 86_400_000;
+  const now = new Date(2026, 10, 27, 15, 0).getTime();
+  const week = buckets(7, now);
+  assert.equal(week.length, 7);
+  assert.equal(week[6].label, '27.11');
+  assert.equal(week[0].label, '21.11');
+  assert.equal(buckets(90, now).length, 13); // weekly for long periods
+  assert.deepEqual(fill(week, [now, now - DAY, now - DAY, now - 30 * DAY]).map((b) => b.value), [0, 0, 0, 0, 0, 2, 1]);
+  const users = [
+    { created: now - 2 * DAY, updated: now, xp: 10 },
+    { created: 0, updated: now - 3 * DAY, xp: 500 }, // signed up before dates were recorded
+    { created: now - 20 * DAY, updated: now - 15 * DAY, xp: 5 },
+  ];
+  const games = [
+    { code: '1', created: now - DAY, started: true, players: 4 },
+    { code: '2', created: now - 2 * DAY, started: false, players: 0 },
+    { code: '3', created: now - 40 * DAY, started: true, players: 9 },
+  ];
+  const s7 = summarize(users, games, 7, now);
+  assert.deepEqual([s7.totalUsers, s7.signups, s7.active, s7.games, s7.started, s7.players], [3, 1, 2, 2, 1, 4]);
+  const s30 = summarize(users, games, 30, now);
+  assert.deepEqual([s30.signups, s30.active, s30.games], [2, 3, 2]);
+  assert.equal(s30.signupsBy.reduce((n, b) => n + b.value, 0), 2);
+  assert.equal(summarize(users, games, 90, now).players, 13);
+});

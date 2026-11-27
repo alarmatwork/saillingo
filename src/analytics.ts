@@ -1,7 +1,7 @@
 // Optional, cookie-free visit counting with GoatCounter (https://www.goatcounter.com).
 // Leave the code empty and the game contacts no one.
 // Set it to your GoatCounter site code, e.g. 'saillingo' for saillingo.goatcounter.com.
-const GOATCOUNTER_CODE = 'saillingo';
+export const GOATCOUNTER_CODE = 'saillingo';
 
 interface GoatCounter {
   count?: (vars: { path: string; title?: string; event?: boolean }) => void;

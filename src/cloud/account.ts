@@ -15,6 +15,8 @@ export interface Account {
   /** Emails a one-time sign-in link to the address. */
   sendEmailLink(email: string): Promise<void>;
   signOut(): Promise<void>;
+  /** Proof of who is signed in (for the admin page's own requests); null when nobody is. */
+  token(): Promise<string | null>;
 }
 
 /**
@@ -59,8 +61,11 @@ export function createAccount(getState: () => State, changed: () => void, askEma
       const remote = await cloud.load(uid);
       mergeCloud(st, remote);
       saveState(st, true);
+      // `created` is when the account was first saved (0 = before this was recorded); it is only used for statistics
+      const created = remote ? Number((remote as { created?: unknown }).created) || 0 : Date.now();
+      const data = { ...cloudData(st), created };
       const same = (a: unknown) => JSON.stringify({ ...(a as object), updated: 0 });
-      if (!remote || same(remote) !== same(cloudData(st))) await cloud.save(uid, cloudData(st));
+      if (!remote || same(remote) !== same(data)) await cloud.save(uid, data);
       st.xpBase = st.xp; // the account now has everything earned here
       saveState(st, true);
       account.status = 'synced';
@@ -107,6 +112,7 @@ export function createAccount(getState: () => State, changed: () => void, askEma
       // the link brings the player back to this page, without whatever lesson is open
       await (await load()).sendEmailLink(email, location.href.split(/[?#]/)[0]);
     },
+    token: async () => (cloud && account.user ? cloud.token() : null),
     async signOut() {
       // upload the latest progress first, so nothing done on this device is lost
       clearTimeout(timer);

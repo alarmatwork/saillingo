@@ -20,6 +20,8 @@ export interface Cloud {
    */
   completeEmailLink(url: string, askEmail: () => string | null): Promise<boolean>;
   signOut(): Promise<void>;
+  /** Proof of who is signed in, for requests made without the SDK; null when nobody is. */
+  token(): Promise<string | null>;
   /** The player's saved data, or null if they have none yet. */
   load(uid: string): Promise<unknown>;
   save(uid: string, data: object): Promise<void>;

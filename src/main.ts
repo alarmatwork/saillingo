@@ -15,6 +15,7 @@ import { MIN_PLAYERS, fetchRank } from './cloud/rank.ts';
 import { sendMessage } from './cloud/messages.ts';
 import { liveAvailable, liveOnHome } from './live/backend.ts';
 import { createLive } from './live/ui.ts';
+import { createAdmin } from './adminView.ts';
 import { MASTERED, boxOf, currentStreak, defaultState, lessonStars, loadState, openTopic, practiceTerms, progressOf, recordSession, recordTest, saveState, unlockNext } from './store.ts';
 
 /** how long a correct answer stays on screen before the next exercise appears */
@@ -34,6 +35,7 @@ const account = createAccount(
   () => {
     if (app.querySelector('.signin') && account.user) goHome();
     else if (app.querySelector('.home')) home();
+    else if (app.querySelector('.admin')) admin.draw();
   },
   () => prompt(t('emailPrompt')),
 );
@@ -531,6 +533,7 @@ function route() {
     if (game && /^\d{6}$/.test(game)) return void live.run(game, q.has('screen'));
     if (q.has('party')) return live.hub();
   }
+  if (q.has('admin') && account.available) return admin.screen();
   if (q.has('search')) return searchScreen(q.get('search') ?? '');
   if (q.has('changelog')) return changelog();
   if (q.has('support') && supportEnabled()) return supportScreen();
@@ -543,6 +546,7 @@ function route() {
 }
 window.addEventListener('hashchange', route);
 
+const admin = createAdmin({ show, goHome, toast, signIn: () => navigate('signin'), user: () => account.user, expectsUser: () => Boolean(st.account) && !account.user && account.status !== 'error', token: () => account.token() });
 const live = createLive({ show, toast, goHome, navigate, track, ui: () => st.ui, learn: () => st.learn, topics: () => st.topics });
 
 function toast(message: string) {

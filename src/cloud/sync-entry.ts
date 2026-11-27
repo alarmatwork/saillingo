@@ -37,6 +37,7 @@ const factory: CloudFactory = (config) => {
       return true;
     },
     signOut: () => signOut(auth),
+    token: async () => (await auth.currentUser?.getIdToken()) ?? null,
     load: async (uid) => (await getDoc(ref(uid))).data() ?? null,
     save: (uid, data) => setDoc(ref(uid), data),
     saveScore: (uid, xp) => setDoc(doc(db, 'scores', uid), { xp: Math.round(xp), updated: Date.now() }),
