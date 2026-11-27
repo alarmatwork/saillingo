@@ -769,8 +769,10 @@ function runSession(sess: Session, lesson: Lesson | null, test = false) {
           verdict(e, r === 'exact' ? 'ok' : r === 'close' ? 'close' : r === 'form' ? 'form' : 'bad', e.term);
         };
         input.addEventListener('input', () => { check.disabled = !input.value.trim(); });
-        body.replaceChildren(h('h2', null, t('qType')), picture(e.term, true).el,
+        // like every other exercise: the question and its clue first, then the picture
+        body.replaceChildren(h('h2', null, t('qType')),
           bilingual() ? h('div', { class: 'quote' }, `${UI().name}: ${termHint(e.term)}`) : h('div', { class: 'quote' }, termDesc(e.term)),
+          picture(e.term, true).el,
           input, button(t('skip'), () => submit(true), 'btn link'));
         const check = checkButton(() => submit());
         if (matchMedia('(pointer: fine)').matches) input.focus();
