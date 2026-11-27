@@ -22,27 +22,50 @@ function barChart(title: string, data: Bucket[], weekly: boolean) {
   const total = data.reduce((n, b) => n + b.value, 0);
   const W = 320, H = 120, pad = 18, slot = W / data.length;
   const bar = Math.max(2, Math.min(18, slot - 2));
-  const tip = h('div', { class: 'tip' }, ' ');
-  const say = (b: Bucket | null) => { tip.textContent = b ? `${weekly ? 'Week from ' : ''}${b.label}: ${b.value}` : ' '; };
+  const tip = h('div', { class: 'tip', hidden: true });
   const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('viewBox', `0 0 ${W} ${H + pad}`);
   svg.setAttribute('role', 'img');
   svg.setAttribute('aria-label', `${title}: ${total} in total`);
+  // with only a few bars there is room to write every number on its bar
+  const numbers = data.length <= 14;
   let html = `<line x1="0" x2="${W}" y1="${H}" y2="${H}" class="axis"/><text x="0" y="9" class="lbl">${max}</text>`;
   data.forEach((b, i) => {
     const x = i * slot + (slot - bar) / 2, hgt = b.value ? Math.max(2, (b.value / max) * (H - 14)) : 0;
     // labels: first, last, and a few in between, so they never collide
     const every = Math.ceil(data.length / 6);
     if (i % every === 0 || i === data.length - 1) html += `<text x="${Math.min(W - 12, Math.max(12, i * slot + slot / 2))}" y="${H + 13}" class="lbl" text-anchor="middle">${i === data.length - 1 && i % every ? '' : b.label}</text>`;
-    html += `<rect x="${x}" y="${H - hgt}" width="${bar}" height="${hgt}" rx="${Math.min(3, bar / 2)}" class="bar"/><rect x="${i * slot}" y="0" width="${slot}" height="${H}" class="hit" data-i="${i}"/>`;
+    html += `<rect x="${x}" y="${H - hgt}" width="${bar}" height="${hgt}" rx="${Math.min(3, bar / 2)}" class="bar" data-bar="${i}"/>`;
+    if (numbers && b.value) html += `<text x="${i * slot + slot / 2}" y="${Math.max(18, H - hgt - 3)}" class="num" text-anchor="middle">${b.value}</text>`;
   });
+  data.forEach((_, i) => { html += `<rect x="${i * slot}" y="0" width="${slot}" height="${H}" class="hit" data-i="${i}"/>`; });
   svg.innerHTML = html;
-  svg.addEventListener('pointermove', (e) => { const i = (e.target as Element).getAttribute?.('data-i'); say(i === null ? null : data[Number(i)]); });
-  svg.addEventListener('pointerdown', (e) => { const i = (e.target as Element).getAttribute?.('data-i'); say(i === null ? null : data[Number(i)]); });
-  svg.addEventListener('pointerleave', () => say(null));
+
+  /** shows the number of one bar in a bubble above it; -1 hides it */
+  let shown = -1;
+  const say = (i: number) => {
+    shown = i;
+    svg.querySelectorAll('.bar.on').forEach((r) => r.classList.remove('on'));
+    if (i < 0) { tip.hidden = true; return; }
+    const b = data[i];
+    svg.querySelector(`[data-bar="${i}"]`)?.classList.add('on');
+    tip.replaceChildren(h('b', null, String(b.value)), h('span', null, `${weekly ? 'week from ' : ''}${b.label}`));
+    tip.hidden = false;
+    // inside the chart, beside the bar (never over it, never over the title)
+    const right = i < data.length / 2;
+    tip.style.left = `${((i + (right ? 1 : 0)) / data.length) * 100}%`;
+    tip.style.transform = right ? 'translateX(6px)' : 'translateX(calc(-100% - 6px))';
+  };
+  const indexOf = (e: Event) => { const v = (e.target as Element).getAttribute?.('data-i'); return v === null || v === undefined ? -1 : Number(v); };
+  svg.addEventListener('pointermove', (e) => { if (e.pointerType === 'mouse') say(indexOf(e)); });
+  svg.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') say(-1); });
+  // touch: tap a bar to see its number, tap it again to hide
+  svg.addEventListener('click', (e) => { const i = indexOf(e); say(i === shown ? -1 : i); });
+  const plot = h('div', { class: 'plot' }, svg, tip);
+
   return h('section', { class: 'settings chart' },
     h('div', { class: 'charthead' }, h('b', null, title), h('span', null, String(total))),
-    svg, tip,
+    plot,
     h('details', null, h('summary', null, 'Table'),
       h('table', null, data.filter((b) => b.value).map((b) => h('tr', null, h('td', null, `${weekly ? 'week from ' : ''}${b.label}`), h('td', null, String(b.value)))))));
 }
