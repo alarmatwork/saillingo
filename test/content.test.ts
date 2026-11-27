@@ -76,4 +76,8 @@ test('search finds a part by the action it is used for', async () => {
   const { et } = await import('../src/i18n/et.ts');
   const { en } = await import('../src/i18n/en.ts');
   for (const q of ['rehvimine', 'rehvima', 'rehv', 'rehvimin', 'reefing']) assert.equal(search(q, [et, en])[0]?.term, 'reefpoints', q);
+  for (const q of ['vaier', 'vaierid']) {
+    const found = search(q, [et, en]).map((x) => x.term);
+    for (const id of ['forestay', 'backstay', 'shrouds', 'lifelines']) assert.ok(found.includes(id as never), `${q}: ${id}`);
+  }
 });
