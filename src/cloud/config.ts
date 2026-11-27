@@ -19,4 +19,4 @@ export const FIREBASE_CONFIG: Record<string, string> | null = {
  * at #party; this only decides whether everyone is pointed to it. It needs
  * anonymous sign-in and the `games` rules in the Firebase project (see README).
  */
-export const LIVE_ON_HOME = false;
+export const LIVE_ON_HOME = true;
