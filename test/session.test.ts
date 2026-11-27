@@ -278,4 +278,8 @@ test('admin statistics: periods, buckets and counts', async () => {
   assert.deepEqual([s30.signups, s30.active, s30.games], [2, 3, 2]);
   assert.equal(s30.signupsBy.reduce((n, b) => n + b.value, 0), 2);
   assert.equal(summarize(users, games, 90, now).players, 13);
+  // today: by the hour, from midnight
+  const today = summarize([...users, { created: now - 3_600_000, updated: now, xp: 1 }], games, 1, now);
+  assert.deepEqual([today.signups, today.active, today.games, today.signupsBy.length], [1, 2, 0, 24]);
+  assert.equal(today.signupsBy[14].value, 1);
 });

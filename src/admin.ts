@@ -93,8 +93,9 @@ export const dayKey = (t: number) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-/** Empty buckets covering the last `days` days up to `now`: one per day, or one per week for long periods. */
+/** Empty buckets covering the last `days` days up to `now`: one per day, one per week for long periods, or one per hour for today (days = 1). */
 export function buckets(days: number, now: number): Bucket[] {
+  if (days === 1) return Array.from({ length: 24 }, (_, hour) => ({ start: dayStart(now) + hour * 3_600_000, label: `${hour}:00`, value: 0 }));
   const step = days > 45 ? 7 : 1;
   const end = dayStart(now) + DAY;
   const out: Bucket[] = [];

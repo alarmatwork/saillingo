@@ -14,7 +14,7 @@ export interface AdminDeps {
   token(): Promise<string | null>;
 }
 
-const PERIODS = [7, 30, 90, 365];
+const PERIODS = [1, 7, 30, 90, 365];
 
 /** One measure over time: bars with the value on hover or tap, and the same figures as a table. */
 function barChart(title: string, data: Bucket[], weekly: boolean) {
@@ -103,15 +103,16 @@ export function createAdmin(d: AdminDeps) {
     const s = summarize(users, games, days, now);
     const weekly = days > 45;
     const visitDays = visits ? [...visits.byDay].filter(([day]) => day >= dayKey(s.since)) : [];
+    // visits come per day, so today's are one figure (counted at noon) rather than a chart by the hour
     const visitsBy = fill(s.empty, visitDays.map(([day]) => new Date(`${day}T12:00:00`).getTime()), visitDays.map(([, n]) => n));
     const tokenInput = h('input', { type: 'password', placeholder: 'GoatCounter API token', autocomplete: 'off' });
     page(
-      h('div', { class: 'seg' }, PERIODS.map((p) => h('button', { type: 'button', class: p === days ? 'on' : '', onclick: () => { days = p; screen(); } }, p === 365 ? '1 year' : `${p} days`))),
+      h('div', { class: 'seg' }, PERIODS.map((p) => h('button', { type: 'button', class: p === days ? 'on' : '', onclick: () => { days = p; screen(); } }, p === 1 ? 'Today' : p === 365 ? '1 year' : `${p} d`))),
       h('div', { class: 'stats' },
         tile(s.signups, 'new sign-ups'), tile(s.active, 'active accounts'), tile(s.games, 'games created'),
         visits ? tile(visitsBy.reduce((n, b) => n + b.value, 0), 'visits') : null),
       h('div', { class: 'stats' }, tile(s.totalUsers, 'accounts in all'), tile(s.started, 'games started'), tile(s.players, 'players in games')),
-      visits && barChart('Visits (everyone, signed in or not)', visitsBy, weekly),
+      visits && days > 1 && barChart('Visits (everyone, signed in or not)', visitsBy, weekly),
       barChart('New sign-ups', s.signupsBy, weekly),
       barChart('Active accounts (by last activity)', s.activeBy, weekly),
       barChart('Party games created', s.gamesBy, weekly),
