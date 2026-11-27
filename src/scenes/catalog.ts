@@ -44,10 +44,19 @@ export const hardware = catalog('hardware', '#dcecf6', [
     <path d="M93 190 V244" stroke="${DARK}" stroke-width="7"/><path d="M80 268 V246 H106 V268" fill="none" stroke="${DARK}" stroke-width="7" stroke-linejoin="round"/>`],
   ['carabiner', `<path d="M76 46 Q58 46 58 70 V210 Q58 246 93 246 Q128 246 128 210 V92 Q128 46 100 46 Z" fill="none" stroke="#e4572e" stroke-width="15" stroke-linejoin="round"/>
     <path d="M128 96 V196" stroke="${DARK}" stroke-width="9" stroke-linecap="round"/><circle cx="128" cy="200" r="7" fill="${DARK}"/>`],
-  ['clutch', `<path d="M8 196 H180" stroke="${ROPE}" stroke-width="12" stroke-linecap="round"/>
-    <rect x="40" y="166" width="108" height="62" rx="10" fill="${DARK}" stroke="#111820" stroke-width="3"/>
-    <path d="M58 176 L146 96" stroke="#d62828" stroke-width="18" stroke-linecap="round"/><circle cx="58" cy="178" r="8" fill="#c3ced8"/>
-    <path d="M40 240 H148" stroke="${STEEL}" stroke-width="8" stroke-linecap="round"/>`],
+  // rope clutch, seen from the side: bolted to the deck, a braided line runs through it,
+  // the lever on top is pushed down to lock the line and lifted to let it run
+  ['clutch', `<rect x="0" y="236" width="187" height="16" fill="#e8dcc4"/><path d="M0 236 H187" stroke="#cdbd9c" stroke-width="2"/>
+    <path d="M-4 196 H40" stroke="#1f6fb2" stroke-width="15" stroke-linecap="round"/><path d="M-4 196 H40" stroke="#fff" stroke-width="15" stroke-dasharray="3 7" opacity="0.55"/>
+    <path d="M148 196 Q170 196 176 186 T190 150" fill="none" stroke="#1f6fb2" stroke-width="15" stroke-linecap="round"/><path d="M148 196 Q170 196 176 186 T190 150" fill="none" stroke="#fff" stroke-width="15" stroke-dasharray="3 7" opacity="0.55"/>
+    <rect x="18" y="222" width="152" height="16" rx="5" fill="#4a5866"/>
+    <circle cx="30" cy="230" r="4" fill="#c3ced8"/><circle cx="158" cy="230" r="4" fill="#c3ced8"/>
+    <path d="M32 222 V180 Q32 164 50 162 H140 Q158 162 158 180 V222 Z" fill="#2b3540" stroke="#141b22" stroke-width="3"/>
+    <ellipse cx="34" cy="196" rx="6" ry="11" fill="#141b22"/><ellipse cx="156" cy="196" rx="6" ry="11" fill="#141b22"/>
+    <rect x="52" y="200" width="84" height="12" rx="3" fill="#f4f6f8"/><path d="M60 206 H100 M106 206 H126" stroke="#9aa6b2" stroke-width="3" stroke-linecap="round"/>
+    <path d="M150 172 L46 128 Q34 123 30 133 L28 140 Q27 147 36 150 L142 182 Z" fill="#d62828" stroke="#7f1d1d" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M38 134 l-2 9 M46 137 l-2 9 M54 140 l-2 9" stroke="#7f1d1d" stroke-width="2.5" stroke-linecap="round"/>
+    <circle cx="146" cy="176" r="9" fill="#c3ced8" stroke="#141b22" stroke-width="3"/>`],
   ['winchhandle', `<rect x="124" y="40" width="28" height="92" rx="12" fill="#d62828" stroke="#7f1d1d" stroke-width="3"/>
     <path d="M138 126 L60 226" stroke="${STEEL}" stroke-width="18" stroke-linecap="round"/>
     <rect x="42" y="208" width="36" height="36" rx="6" fill="${DARK}"/><path d="M52 218 h16 v16 h-16 Z" fill="#c3ced8"/>`],
