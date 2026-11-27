@@ -198,3 +198,56 @@ test('XP earned on two signed-in devices adds up, and syncing twice counts nothi
   sync(phone); sync(computer); // nothing new: nothing changes
   assert.deepEqual([phone.xp, computer.xp, cloud.xp], [76, 76, 76]);
 });
+
+test('party quiz: questions, the shared clock and scoring', async () => {
+  const { buildQuestions, phaseAt, points, startPatch, revealPatch, nextPatch, allAnswered, REVEAL_MS, BOARD_AFTER_MS, COUNTDOWN_MS } = await import('../src/live/core.ts');
+  for (const kinds of ['pick', 'define', 'both'] as const) {
+    const qs = buildQuestions(['hull', 'flags', 'rightofway'], 20, kinds, (t) => en.terms[t].name, seeded(5));
+    assert.equal(qs.length, 20);
+    assert.equal(new Set(qs.map((q) => q.term)).size, 20);
+    for (const q of qs) {
+      assert.equal(q.options.length, 4);
+      assert.ok(q.options.includes(q.term));
+      assert.equal(new Set(q.options.map((o) => en.terms[o].name)).size, 4);
+      if (kinds !== 'both') assert.equal(q.kind, kinds);
+    }
+  }
+  // a small topic gives as many questions as it has terms
+  assert.ok(buildQuestions(['rightofway'], 30, 'both', (t) => en.terms[t].name, seeded(1)).length < 30);
+
+  const g = { status: 'lobby' as 'lobby' | 'run', anchorQ: 0, anchorAt: 0, secs: 20, questions: buildQuestions(['hull'], 3, 'pick', (t) => en.terms[t].name, seeded(2)) };
+  assert.equal(phaseAt(g, 0).phase, 'lobby');
+  Object.assign(g, startPatch(1000));
+  const t0 = 1000 + COUNTDOWN_MS, cycle = 20_000 + REVEAL_MS;
+  assert.deepEqual(phaseAt(g, 2000), { phase: 'countdown', q: 0, left: COUNTDOWN_MS - 1000 });
+  assert.deepEqual(phaseAt(g, t0 + 5000), { phase: 'ask', q: 0, left: 15_000, total: 20_000 });
+  assert.deepEqual(phaseAt(g, t0 + 21_000), { phase: 'reveal', q: 0, left: REVEAL_MS - 1000, board: false });
+  assert.equal((phaseAt(g, t0 + 20_000 + BOARD_AFTER_MS) as { board: boolean }).board, true);
+  assert.deepEqual(phaseAt(g, t0 + cycle + 1), { phase: 'ask', q: 1, left: 19_999, total: 20_000 });
+  // nobody presses anything: the game still reaches the end by itself
+  assert.equal(phaseAt(g, t0 + 3 * cycle).phase, 'done');
+  // after the last question the answer is shown, then the final results (no standings in between)
+  assert.equal(phaseAt(g, t0 + 2 * cycle + 21_000).phase, 'reveal');
+  assert.equal(phaseAt(g, t0 + 2 * cycle + 20_000 + BOARD_AFTER_MS).phase, 'done');
+  // everybody answered early: the host shows the answer straight away, then moves on
+  Object.assign(g, revealPatch(g, 0, t0 + 4000));
+  assert.deepEqual(phaseAt(g, t0 + 4000), { phase: 'reveal', q: 0, left: REVEAL_MS, board: false });
+  Object.assign(g, nextPatch(0, t0 + 6000));
+  assert.equal(phaseAt(g, t0 + 6000).phase, 'countdown');
+  assert.equal((phaseAt(g, t0 + 8000) as { q: number }).q, 1);
+  Object.assign(g, nextPatch(2, t0 + 9000));
+  assert.equal(phaseAt(g, t0 + 9000).phase, 'done');
+
+  assert.equal(points(false, 0, 20_000), 0);
+  assert.equal(points(true, 0, 20_000), 1000);
+  assert.equal(points(true, 20_000, 20_000), 500);
+  assert.ok(points(true, 3000, 20_000) > points(true, 9000, 20_000));
+
+  const pl = (id: string, q?: number) => ({ id, name: id, score: 0, streak: 0, right: 0, joined: 0, ...(q === undefined ? {} : { a: { q, c: 0, ok: true, pts: 1 } }) });
+  assert.equal(allAnswered([], 0), false);
+  assert.equal(allAnswered([pl('a', 0), pl('b')], 0), false);
+  assert.equal(allAnswered([pl('a', 0), pl('b', 0)], 0), true);
+  // someone who stopped answering two questions ago does not hold everyone up
+  assert.equal(allAnswered([pl('a', 3), pl('b', 3), pl('gone', 0)], 3), true);
+  assert.equal(allAnswered([pl('a', 3), pl('b', 2)], 3), false);
+});

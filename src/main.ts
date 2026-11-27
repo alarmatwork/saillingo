@@ -13,6 +13,8 @@ import { Session, checkTyped, type Exercise } from './session.ts';
 import { search } from './search.ts';
 import { MIN_PLAYERS, fetchRank } from './cloud/rank.ts';
 import { sendMessage } from './cloud/messages.ts';
+import { liveAvailable, liveOnHome } from './live/backend.ts';
+import { createLive } from './live/ui.ts';
 import { MASTERED, boxOf, currentStreak, defaultState, lessonStars, loadState, openTopic, practiceTerms, progressOf, recordSession, recordTest, saveState, unlockNext } from './store.ts';
 
 /** how long a correct answer stays on screen before the next exercise appears */
@@ -199,6 +201,9 @@ function home({ toProgress = false } = {}) {
     h('button', { type: 'button', class: 'practice', disabled: !practice.length, onclick: startPractice },
       h('span', { class: 'pi' }, '🧭'),
       h('span', null, h('b', null, t('practice')), h('small', null, practice.length ? t('practiceDesc') : t('practiceNone')))),
+    liveOnHome() && h('button', { type: 'button', class: 'practice party', onclick: () => navigate('party') },
+      h('span', { class: 'pi' }, '🎉'),
+      h('span', null, h('b', null, t('liveTile')), h('small', null, t('liveTileDesc')))),
     sponsorBanner(),
     h('h3', { class: 'section' }, t('topics')),
     h('p', { class: 'hint' }, t('testHint')),
@@ -520,6 +525,12 @@ function route() {
     const term = TERM_IDS.find((x) => x === q.get('term'));
     return explore(topic.id, term && termsOfTopic(topic.id).includes(term) ? term : undefined);
   }
+  if (liveAvailable()) {
+    // the party quiz: #party to create or join, #game=<code> to play or host, #screen=<code> for the big screen
+    const game = q.get('game') ?? q.get('screen');
+    if (game && /^\d{6}$/.test(game)) return void live.run(game, q.has('screen'));
+    if (q.has('party')) return live.hub();
+  }
   if (q.has('search')) return searchScreen(q.get('search') ?? '');
   if (q.has('changelog')) return changelog();
   if (q.has('support') && supportEnabled()) return supportScreen();
@@ -531,6 +542,8 @@ function route() {
   home({ toProgress: true });
 }
 window.addEventListener('hashchange', route);
+
+const live = createLive({ show, toast, goHome, navigate, track, ui: () => st.ui, learn: () => st.learn, topics: () => st.topics });
 
 function toast(message: string) {
   const el = h('div', { class: 'toast', role: 'status' }, message);
@@ -854,7 +867,7 @@ async function checkForUpdate() {
 }
 
 function applyUpdateWhenSafe() {
-  if (!newVersion || app.querySelector('.session, .results')) return;
+  if (!newVersion || app.querySelector('.session, .results, .live.game, .live.bigscreen')) return;
   try {
     sessionStorage.setItem(UPDATE_TRY, `${newVersion}|${Date.now()}`);
     sessionStorage.setItem(UPDATED_FROM, __VERSION__);

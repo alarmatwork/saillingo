@@ -99,15 +99,51 @@ Google, Apple or a link sent by email) and keep their progress across devices:
        match /scores/{uid} {
          allow read: if true;
          allow write: if request.auth != null && request.auth.uid == uid
+           && request.auth.token.firebase.sign_in_provider != 'anonymous'
            && request.resource.data.keys().hasOnly(['xp', 'updated'])
            && request.resource.data.xp is int
            && request.resource.data.xp >= 0 && request.resource.data.xp < 1000000;
+       }
+
+       // party quiz: anyone can watch a game; only its host changes it, and every
+       // player writes only their own name and score (see "Party quiz" below)
+       match /games/{code} {
+         allow read: if true;
+         allow create: if request.auth != null && request.resource.data.host == request.auth.uid
+           && request.resource.data.questions.size() <= 40;
+         allow update: if request.auth != null && resource.data.host == request.auth.uid
+           && request.resource.data.host == request.auth.uid;
+         match /players/{uid} {
+           allow read: if true;
+           allow write: if request.auth != null && request.auth.uid == uid
+             && request.resource.data.name is string && request.resource.data.name.size() <= 16
+             && request.resource.data.score is int
+             && request.resource.data.score >= 0 && request.resource.data.score <= 40000;
+         }
        }
      }
    }
    ```
 4. Project settings -> Your apps -> add a Web app and paste its
    `firebaseConfig` object into `src/cloud/config.ts`.
+
+### Party quiz
+
+The party quiz (one big screen, everyone answers on their phone) uses the same
+Firebase project. It needs two things:
+
+1. Build -> Authentication -> Sign-in method: enable **Anonymous**. Every
+   device in a game signs in without a name or an email, only to get an id, so
+   the rules above can tell the host and the players apart.
+2. The `games` rules above.
+
+Then set `LIVE_ON_HOME` in `src/cloud/config.ts` to `true` to show its button
+on the home page. To try the game without any server, open the page with
+`?mocklive` in the address: games then work between tabs of one browser.
+
+A game is one small document (`games/<6-digit code>`) plus one per player. The
+game runs on a shared clock: the document says when a question started and
+every device works out the rest, so very little is read or written.
 
 Progress is always kept in the browser first; signing in adds a copy in
 Firestore (`users/<id>`) that is merged with the device's progress, keeping

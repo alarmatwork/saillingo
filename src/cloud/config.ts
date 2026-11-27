@@ -13,3 +13,10 @@ export const FIREBASE_CONFIG: Record<string, string> | null = {
   messagingSenderId: '854896830479',
   appId: '1:854896830479:web:de131dcab31e5b399a1b7a',
 };
+
+/**
+ * Shows the party quiz button on the home page. The game itself always works
+ * at #party; this only decides whether everyone is pointed to it. It needs
+ * anonymous sign-in and the `games` rules in the Firebase project (see README).
+ */
+export const LIVE_ON_HOME = false;

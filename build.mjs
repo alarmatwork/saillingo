@@ -38,7 +38,7 @@ const { version, changelog } = await history();
 
 const options = {
   // sync.js holds the Firebase SDK and is only downloaded when a player signs in
-  entryPoints: { app: 'src/main.ts', sync: 'src/cloud/sync-entry.ts' },
+  entryPoints: { app: 'src/main.ts', sync: 'src/cloud/sync-entry.ts', live: 'src/live/live-entry.ts' },
   outdir: 'dist',
   bundle: true,
   format: 'iife',
