@@ -94,7 +94,7 @@ export const enUi = {
   supportNone: 'Your name could be the first one here.',
   supportShare: 'Share SailLingo',
   liveTile: 'Party quiz',
-  liveTileDesc: 'A live quiz for a group: one big screen, everyone answers on their phone',
+  liveTileDesc: 'A quiz on a big screen, answers from phones',
   liveTitle: 'Party quiz',
   liveIntro: 'Create a game, put it on a big screen and invite everyone to play along on their phone.',
   liveJoinTitle: 'Join a game',

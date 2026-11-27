@@ -71,8 +71,8 @@ button:disabled { cursor: default; }
 .stats b { font-size: 1.1rem; white-space: nowrap; }
 .stats:has(> div:nth-child(4)) b { font-size: 1rem; }
 .stats:has(> div:nth-child(4)) small { font-size: 0.72rem; line-height: 1.2; }
-.practice { display: flex; align-items: center; gap: 14px; text-align: left; border: 0; border-radius: 16px; padding: 14px 16px; background: linear-gradient(135deg, #ff9a3d, #ff6b2c); color: #fff; box-shadow: 0 4px 0 #c94f17; }
-.practice:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 #c94f17; }
+.practice { display: flex; align-items: center; gap: 12px; text-align: left; border: 0; border-radius: 16px; padding: 12px 14px; background: #e9772e; color: #fff; box-shadow: 0 2px 0 #b85a1d; }
+.practice:active:not(:disabled) { transform: translateY(2px); box-shadow: none; }
 .practice:disabled { background: var(--card); color: var(--muted); box-shadow: none; border: 2px dashed var(--line); }
 .practice b { display: block; font-size: 1.1rem; }
 .practice small { color: inherit; opacity: 0.92; }
@@ -342,8 +342,7 @@ textarea.answer { resize: vertical; font-family: inherit; }
 .rankdetails { font-size: 0.92rem; }
 
 /* ---- party quiz ---- */
-.practice.party { background: linear-gradient(135deg, #8a5cf6, #d63f9c); box-shadow: 0 4px 0 #8c2a68; }
-.practice.party:active { transform: translateY(3px); box-shadow: 0 1px 0 #8c2a68; }
+.practice.party { background: #8a55c9; box-shadow: 0 2px 0 #64389a; }
 .live .center { text-align: center; }
 .live .field { display: flex; flex-direction: column; gap: 6px; }
 .live .field > span { font-weight: 700; font-size: 0.92rem; }
@@ -475,3 +474,13 @@ textarea.answer { resize: vertical; font-family: inherit; }
 .admin .joinrow input { flex: 1; min-width: 0; border: 2px solid var(--line); border-radius: 12px; padding: 10px 12px; font: inherit; background: var(--card); color: var(--ink); }
 .admin .visitorsetup { border-color: var(--brand); }
 .admin .stats.hero b { font-size: 1.6rem; color: var(--brand); }
+
+/* practice and party quiz in one row: next to each other when both fit, stacked on very narrow screens */
+.duo { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; }
+.duo .practice { display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; align-content: start; gap: 4px 6px; padding: 10px; }
+.duo .practice .pi { font-size: 1.15rem; line-height: 1; }
+/* the text span's children join the grid: title next to the icon, description below both */
+.duo .practice > span:last-child { display: contents; }
+.duo .practice small { grid-column: 1 / -1; }
+.duo .practice b { font-size: 0.95rem; min-width: 0; overflow-wrap: break-word; line-height: 1.2; }
+.duo .practice small { font-size: 0.82rem; line-height: 1.3; }
