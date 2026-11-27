@@ -1,0 +1,11 @@
+{
+  "name": "SailLingo",
+  "short_name": "SailLingo",
+  "description": "Learn the language of sailing",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#eef5fa",
+  "theme_color": "#0b6fb8",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}
