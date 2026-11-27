@@ -291,7 +291,12 @@ export function createLive(d: LiveDeps) {
         return o.onPick ? h('button', { type: 'button', class: cls, onclick: () => o.onPick!(i) }, inner) : h('div', { class: cls }, inner);
       }));
 
-    const heading = (ph: { q: number }) => h('small', { class: 'qno' }, t('liveQuestion', { n: ph.q + 1, total: game!.questions.length }));
+    /** "Question 3 of 15", with a bar showing how far the game has come */
+    const heading = (ph: { q: number }) => {
+      const total = game!.questions.length;
+      return h('div', { class: 'qno' }, h('b', null, t('liveQuestion', { n: ph.q + 1, total })),
+        h('span', { class: 'qbar' }, h('i', { style: `width:${((ph.q + 1) / total) * 100}%` })));
+    };
     const timer = () => h('div', { class: 'lv-timer' }, (live.timer = h('i', null)));
 
     function standings(title: string, top: number, q?: number) {
@@ -467,7 +472,7 @@ export function createLive(d: LiveDeps) {
       else body = playerBody(ph);
       // the host can always move the game along by hand
       const bar = isHost() && ph.phase !== 'lobby' && h('div', { class: 'hostbar' },
-        h('span', null, `🎉 ${code.slice(0, 3)} ${code.slice(3)} · 👥 ${players.length}`),
+        h('span', null, `🎉 ${code.slice(0, 3)} ${code.slice(3)} · 👥 ${players.length}`, 'q' in ph ? ` · ❓ ${ph.q + 1}/${g.questions.length}` : ''),
         (ph.phase === 'ask' || ph.phase === 'reveal') && btn(`${t('liveNext')} ▶`, () => {
           const now = backend.now();
           backend.updateGame(code, ph.phase === 'ask' ? revealPatch(g, ph.q, now) : nextPatch(ph.q, now)).catch(() => {});

@@ -372,7 +372,9 @@ textarea.answer { resize: vertical; font-family: inherit; }
 .live .hostbar { display: flex; align-items: center; justify-content: space-between; gap: 8px; background: var(--card); border: 2px solid var(--line); border-radius: 12px; padding: 6px 6px 6px 12px; font-weight: 700; font-size: 0.9rem; min-height: 44px; }
 .live .hostview { border: 2px dashed var(--line); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 10px; }
 .live .myscore { display: flex; justify-content: space-between; font-size: 0.95rem; color: var(--muted); }
-.live .qno { color: var(--muted); font-weight: 700; }
+.live .qno { display: flex; align-items: center; gap: 10px; color: var(--brand); font-size: 1.05rem; white-space: nowrap; }
+.live .qno .qbar { flex: 1; min-width: 60px; max-width: 14em; height: 8px; border-radius: 99px; background: var(--line); overflow: hidden; }
+.live .qno .qbar i { display: block; height: 100%; background: var(--brand); border-radius: 99px; }
 .live .qhead { display: flex; justify-content: space-between; gap: 12px; }
 .live .prompt { font-size: 1.15rem; }
 .live .media .scene-wrap { max-width: calc(34dvh * var(--ratio, 1.08)); }
@@ -428,7 +430,9 @@ textarea.answer { resize: vertical; font-family: inherit; }
 .live.bigscreen .invite .url { font-size: 1.15em; background: none; padding: 0; color: #fff; font-family: inherit; }
 .live.bigscreen .bigcode { font-size: 5em; color: #ffd166; line-height: 1.1; }
 .live.bigscreen .roster { font-size: 1.2em; margin-bottom: auto; }
-.live.bigscreen .qno, .live.bigscreen .count { font-size: 1em; }
+.live.bigscreen .qno { font-size: 1.25em; color: #ffd166; flex: 1; }
+.live.bigscreen .qno .qbar i { background: #ffd166; }
+.live.bigscreen .count { font-size: 1em; }
 .live.bigscreen .prompt { font-size: 1.7em; text-align: center; }
 .live.bigscreen .media { flex: 1; min-height: 0; display: flex; align-items: center; justify-content: center; }
 .live.bigscreen .media .scene-wrap { max-width: calc(52vh * var(--ratio, 1.08)); box-shadow: 0 0 0 3px #fff4, 0 10px 40px #0008; }
