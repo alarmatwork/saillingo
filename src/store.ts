@@ -27,6 +27,8 @@ export interface State {
   rank?: { top: number; place?: number; nextXp?: number | null; change?: number; players: number; xp: number; at: number };
   /** the player closed the "sign in to keep your score" banner */
   loginDismissed?: boolean;
+  /** the player closed the "add to home screen" note */
+  installDismissed?: boolean;
   /** topics that are open (shown with their lessons and used in practice) */
   topics: TopicId[];
   /** 2 once open topics follow the basic-to-advanced unlocking */

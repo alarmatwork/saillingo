@@ -16,6 +16,7 @@ import { sendMessage } from './cloud/messages.ts';
 import { liveAvailable, liveOnHome } from './live/backend.ts';
 import { createLive } from './live/ui.ts';
 import { createAdmin } from './adminView.ts';
+import { installWay, onInstallChange, promptInstall } from './install.ts';
 import { MASTERED, boxOf, currentStreak, defaultState, lessonStars, loadState, openTopic, practiceTerms, progressOf, recordSession, recordTest, saveState, unlockNext } from './store.ts';
 
 /** how long a correct answer stays on screen before the next exercise appears */
@@ -53,7 +54,7 @@ async function signOutAndClear() {
   } catch {
     return toast(t('signInOffline'));
   }
-  st = { ...defaultState(st.ui), learn: st.learn, typing: st.typing, typingSet: st.typingSet, loginDismissed: st.loginDismissed };
+  st = { ...defaultState(st.ui), learn: st.learn, typing: st.typing, typingSet: st.typingSet, loginDismissed: st.loginDismissed, installDismissed: st.installDismissed };
   saveState(st);
   home();
   toast(t('signedOut'));
@@ -133,6 +134,33 @@ function button(label: string, onclick: () => void, cls = 'btn primary', disable
 }
 
 // ---- home -------------------------------------------------------------------
+const IOS_SHARE_ICON = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M6 11H5v10h14V11h-1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/** Closeable note at the top of the home page: add SailLingo to the home screen. */
+function installNote() {
+  const way = st.installDismissed ? null : installWay();
+  if (!way) return null;
+  const close = () => { st.installDismissed = true; saveState(st); track(`install-close/${way}`); document.querySelector('.install')?.remove(); };
+  const how = way === 'ios'
+    ? h('p', { class: 'how', html: t('installIos', { share: `<span class="shareicon">${IOS_SHARE_ICON}</span>` }) })
+    : way === 'android' ? h('p', { class: 'how' }, t('installAndroid'))
+    : way === 'inApp' ? h('p', { class: 'how' }, t('installInApp'))
+    : null;
+  return h('aside', { class: 'install' },
+    h('img', { class: 'ii', src: 'icon-192.png', alt: '', width: 44, height: 44 }),
+    h('div', null,
+      h('b', null, t('installTitle')),
+      h('p', null, t('installText')),
+      how,
+      way === 'prompt' && button(`📲 ${t('installButton')}`, async () => {
+        track('install-prompt');
+        if (await promptInstall()) { track('install-done'); document.querySelector('.install')?.remove(); }
+      }, 'btn primary small')),
+    h('button', { type: 'button', class: 'x', 'aria-label': t('close'), title: t('close'), onclick: close }, '✕'));
+}
+// the install prompt can arrive after the home page is already drawn
+onInstallChange(() => { if (document.querySelector('.screen.home')) home(); });
+
 /** @param toProgress scroll down to the topic the player is working on */
 function home({ toProgress = false } = {}) {
   const y = window.scrollY;
@@ -179,6 +207,7 @@ function home({ toProgress = false } = {}) {
   };
 
   show(h('div', { class: 'screen home' },
+    installNote(),
     h('header', { class: 'hero' },
       h('div', { class: 'logo', html: LOGO }),
       h('div', null, h('h1', null, t('appTitle')), h('p', null, t('tagline'))),
@@ -228,7 +257,7 @@ function home({ toProgress = false } = {}) {
           : button(t('signIn'), openSignIn, 'btn primary small')),
       button(t('reset'), () => {
         if (!confirm(t('resetConfirm'))) return;
-        st = { ...defaultState(st.ui), learn: st.learn, typing: st.typing, typingSet: st.typingSet, topics: st.topics, account: st.account, loginDismissed: st.loginDismissed };
+        st = { ...defaultState(st.ui), learn: st.learn, typing: st.typing, typingSet: st.typingSet, topics: st.topics, account: st.account, loginDismissed: st.loginDismissed, installDismissed: st.installDismissed };
         saveState(st);
         home();
       }, 'btn ghost danger')),

@@ -3,7 +3,7 @@
 // cache ("no-cache" still allows a cheap 304 reply), so a new release is picked
 // up on the next start instead of minutes later.
 const CACHE = 'sailboatparts-__BUILD__';
-const FILES = ['./', 'index.html', 'app.js', 'app.css', 'icon.svg', 'manifest.webmanifest'];
+const FILES = ['./', 'index.html', 'app.js', 'app.css', 'icon.svg', 'icon-192.png', 'manifest.webmanifest'];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(FILES)).then(() => self.skipWaiting()));
