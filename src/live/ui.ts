@@ -221,10 +221,13 @@ export function createLive(d: LiveDeps) {
       }
       if (ph.phase === 'ask' && live.timer) live.timer.style.width = `${(ph.left / ph.total) * 100}%`;
       if (ph.phase === 'countdown' && live.number) live.number.textContent = String(Math.max(1, Math.ceil(ph.left / 1000)));
-      // the host moves on as soon as everybody has answered
-      if (ph.phase === 'ask' && isHost() && !cut.has(ph.q) && allAnswered(everyone(), ph.q)) {
+      // as soon as everybody has answered the game moves on: done by the host's
+      // device and by the big screen, so nobody has to tap anything (a TV has no
+      // hands, and the host's phone may be asleep)
+      if (ph.phase === 'ask' && (isHost() || asScreen) && !cut.has(ph.q) && allAnswered(everyone(), ph.q)) {
         cut.add(ph.q);
-        backend.updateGame(code, revealPatch(game, ph.q, backend.now())).catch(() => cut.delete(ph.q));
+        // the host tries again; the screen does not keep knocking if the rules refuse it
+        backend.updateGame(code, revealPatch(game, ph.q, backend.now())).catch(() => { if (!asScreen) cut.delete(ph.q); });
       }
     }
 
@@ -234,9 +237,10 @@ export function createLive(d: LiveDeps) {
       if (ph.phase === 'lobby') {
         if (live.roster) fillRoster(live.roster);
         if (live.start) live.start.disabled = !players.length;
-      } else if (ph.phase === 'ask' && live.count) {
-        live.count.textContent = t('liveAnswered', { n: players.filter((p) => p.a?.q === ph.q).length, total: players.length });
-      } else if (ph.phase !== 'ask') {
+      } else if (ph.phase === 'ask') {
+        tick();
+        if (live.count) live.count.textContent = t('liveAnswered', { n: players.filter((p) => p.a?.q === ph.q).length, total: players.length });
+      } else {
         draw(ph); // standings and results follow late answers
       }
     }

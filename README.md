@@ -116,14 +116,25 @@ Google, Apple or a link sent by email) and keep their progress across devices:
            && request.resource.data.xp >= 0 && request.resource.data.xp < 1000000;
        }
 
-       // party quiz: anyone can watch a game; only its host changes it, and every
-       // player writes only their own name and score (see "Party quiz" below)
+       // party quiz: anyone can watch a game; only its host changes it (the big
+       // screen may only end a question early), and every player writes only
+       // their own name and score (see "Party quiz" below)
        match /games/{code} {
          allow read: if true;
          allow create: if request.auth != null && request.resource.data.host == request.auth.uid
            && request.resource.data.questions.size() <= 40;
-         allow update: if request.auth != null && resource.data.host == request.auth.uid
-           && request.resource.data.host == request.auth.uid;
+         allow update: if request.auth != null && (
+           (resource.data.host == request.auth.uid && request.resource.data.host == request.auth.uid)
+           // the big screen ends a question once everyone has answered: it may
+           // only move the clock of a running game, by at most one question
+           || (resource.data.status == 'run'
+             && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['anchorQ', 'anchorAt'])
+             && request.resource.data.anchorQ is int
+             && request.resource.data.anchorQ >= resource.data.anchorQ
+             && request.resource.data.anchorQ <= resource.data.anchorQ + 1
+             && request.resource.data.anchorAt is number
+             && request.resource.data.anchorAt > request.time.toMillis() - 40000
+             && request.resource.data.anchorAt < request.time.toMillis() + 5000));
          match /players/{uid} {
            allow read: if true;
            allow write: if request.auth != null && request.auth.uid == uid
