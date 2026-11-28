@@ -13,6 +13,10 @@ const DAY = 86_400_000;
 const docs = () => `https://firestore.googleapis.com/v1/projects/${FIREBASE_CONFIG!.projectId}/databases/(default)/documents`;
 
 export class Forbidden extends Error {}
+/** The browser never reached GoatCounter: tracker blocking (Safari, Brave, Firefox, ad blockers) or no network. */
+export class VisitsBlocked extends Error {}
+/** GoatCounter answered, but not with statistics (wrong token, missing "Read statistics", rate limit). */
+export class VisitsRefused extends Error { constructor(readonly status: number) { super(`GoatCounter: ${status}`); } }
 
 async function call(url: string, token: string, body?: unknown, method = body ? 'POST' : 'GET'): Promise<unknown> {
   const res = await fetch(url, { method, headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
@@ -71,10 +75,15 @@ export interface Visits {
 /** Visits per day (pages only) and how often each tracked action happened. */
 export async function loadVisits(goatToken: string, since: number, until: number): Promise<Visits> {
   const iso = (t: number) => new Date(Math.floor(t / 3_600_000) * 3_600_000).toISOString();
-  const res = await fetch(`https://${GOATCOUNTER_CODE}.goatcounter.com/api/v0/stats/hits?start=${iso(since)}&end=${iso(until + 3_600_000)}&limit=100&daily=true`, {
-    headers: { authorization: `Bearer ${goatToken}`, 'content-type': 'application/json' },
-  });
-  if (!res.ok) throw new Error(`GoatCounter: ${res.status}`);
+  let res: Response;
+  try {
+    res = await fetch(`https://${GOATCOUNTER_CODE}.goatcounter.com/api/v0/stats/hits?start=${iso(since)}&end=${iso(until + 3_600_000)}&limit=100&daily=true`, {
+      headers: { authorization: `Bearer ${goatToken}`, 'content-type': 'application/json' },
+    });
+  } catch {
+    throw new VisitsBlocked();
+  }
+  if (!res.ok) throw new VisitsRefused(res.status);
   const data = (await res.json()) as { hits?: { count: number; event: boolean; path: string; stats?: { day: string; daily: number; hourly?: number[] }[] }[] };
   const byDay = new Map<string, number>();
   const byHour = new Map<string, number[]>();

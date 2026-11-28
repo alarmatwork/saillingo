@@ -1,6 +1,6 @@
 // The admin page (#admin): simple numbers and bar charts for a chosen period.
 // English only: it is seen by the site's owner, not by players.
-import { Forbidden, installFunnel, loadGames, loadUsers, loadVisitToken, loadVisits, saveVisitToken, summarize, visitorsBy, type Bucket, type GameRow, type UserRow, type Visits } from './admin.ts';
+import { Forbidden, VisitsBlocked, VisitsRefused, installFunnel, loadGames, loadUsers, loadVisitToken, loadVisits, saveVisitToken, summarize, visitorsBy, type Bucket, type GameRow, type UserRow, type Visits } from './admin.ts';
 import { h } from './dom.ts';
 
 export interface AdminDeps {
@@ -73,6 +73,7 @@ function barChart(title: string, data: Bucket[], weekly: boolean) {
 export function createAdmin(d: AdminDeps) {
   let days = 30;
   let users: UserRow[] | null = null, games: GameRow[] | null = null, visits: Visits | null = null;
+  let visitsError: unknown = null;
   let goatToken: string | null = null;
   let state: 'idle' | 'loading' | 'forbidden' | 'error' = 'idle';
   let loadedFor = '';
@@ -90,7 +91,8 @@ export function createAdmin(d: AdminDeps) {
       [users, games, goatToken] = await Promise.all([loadUsers(token), loadGames(token, since), goatToken ?? loadVisitToken(token)]);
       state = 'idle';
       loadedFor = d.user()!.uid;
-      if (goatToken) visits = await loadVisits(goatToken, since, Date.now()).catch(() => null);
+      visitsError = null;
+      if (goatToken) visits = await loadVisits(goatToken, since, Date.now()).catch((e) => { visitsError = e; return null; });
     } catch (e) {
       state = e instanceof Forbidden ? 'forbidden' : 'error';
     }
@@ -149,11 +151,15 @@ export function createAdmin(d: AdminDeps) {
         h('button', { type: 'button', class: 'btn ghost small', onclick: () => { loadedFor = ''; screen(); } }, '↻ Refresh')));
   }
 
+  const BLOCKED = 'This browser blocked the connection to GoatCounter, so the token could not be checked. Tracker blocking does this (Safari\'s Advanced Tracking Protection, Brave, Firefox, ad blockers). Turn it off for this page or open #admin in another browser.';
+
   function tokenCard(tokenInput: HTMLInputElement, now: number) {
     return h('section', { class: 'settings visitorsetup' },
         h('b', null, '👀 See all visitors'),
-        h('p', { class: 'hint' }, goatToken
-          ? 'GoatCounter did not answer with the saved token. Paste a new one:'
+        h('p', { class: 'hint' }, visitsError instanceof VisitsBlocked
+          ? BLOCKED
+          : goatToken
+          ? `GoatCounter did not accept the saved token${visitsError instanceof VisitsRefused ? ` (error ${visitsError.status})` : ''}. Paste a new one:`
           : 'The numbers below only count players who signed in. To also see everyone who opens SailLingo, paste a GoatCounter API token (goatcounter.com → Settings → API → New token, with "Read statistics"):'),
         h('form', { class: 'joinrow', onsubmit: async (e: Event) => {
           e.preventDefault();
@@ -165,8 +171,10 @@ export function createAdmin(d: AdminDeps) {
             goatToken = value;
             loadedFor = '';
             screen();
-          } catch {
-            d.toast('GoatCounter did not accept this token.');
+          } catch (e) {
+            d.toast(e instanceof VisitsBlocked ? BLOCKED
+              : e instanceof VisitsRefused && e.status === 429 ? 'GoatCounter is busy (too many requests). Try again in a minute.'
+              : `GoatCounter did not accept this token${e instanceof VisitsRefused ? ` (error ${e.status})` : ''}. It needs the "Read statistics" permission.`);
           }
         } }, tokenInput, h('button', { type: 'submit', class: 'btn primary small' }, 'Save')));
   }
