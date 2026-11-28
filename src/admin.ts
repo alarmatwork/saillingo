@@ -16,7 +16,10 @@ export class Forbidden extends Error {}
 /** The browser never reached GoatCounter: tracker blocking (Safari, Brave, Firefox, ad blockers) or no network. */
 export class VisitsBlocked extends Error {}
 /** GoatCounter answered, but not with statistics (wrong token, missing "Read statistics", rate limit). */
-export class VisitsRefused extends Error { constructor(readonly status: number) { super(`GoatCounter: ${status}`); } }
+export class VisitsRefused extends Error {
+  status: number;
+  constructor(status: number) { super(`GoatCounter: ${status}`); this.status = status; }
+}
 
 async function call(url: string, token: string, body?: unknown, method = body ? 'POST' : 'GET'): Promise<unknown> {
   const res = await fetch(url, { method, headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: body ? JSON.stringify(body) : undefined });
