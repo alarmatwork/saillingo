@@ -17,7 +17,7 @@ export interface AdminDeps {
 const PERIODS = [1, 7, 30, 90, 365];
 
 /** One measure over time: bars with the value on hover or tap, and the same figures as a table. */
-function barChart(title: string, data: Bucket[], weekly: boolean) {
+function barChart(title: string, data: Bucket[], weekly: boolean, now = Date.now()) {
   const max = Math.max(1, ...data.map((b) => b.value));
   const total = data.reduce((n, b) => n + b.value, 0);
   const W = 320, H = 120, pad = 18, slot = W / data.length;
@@ -38,6 +38,14 @@ function barChart(title: string, data: Bucket[], weekly: boolean) {
     html += `<rect x="${x}" y="${H - hgt}" width="${bar}" height="${hgt}" rx="${Math.min(3, bar / 2)}" class="bar" data-bar="${i}"/>`;
     if (numbers && b.value) html += `<text x="${i * slot + slot / 2}" y="${Math.max(18, H - hgt - 3)}" class="num" text-anchor="middle">${b.value}</text>`;
   });
+  // a thin gold line at the current moment (inside today's bar, or this hour's)
+  const span = data.length > 1 ? data[1].start - data[0].start : 86_400_000;
+  const at = data.findIndex((b, i) => now >= b.start && now < (data[i + 1]?.start ?? b.start + span));
+  if (at >= 0) {
+    const end = data[at + 1]?.start ?? data[at].start + span;
+    const x = Math.min(W - 1, (at + (now - data[at].start) / (end - data[at].start)) * slot);
+    html += `<line x1="${x}" x2="${x}" y1="12" y2="${H}" class="now"/><text x="${x}" y="9" class="lbl nowlbl" text-anchor="${x > W - 20 ? 'end' : 'middle'}">now</text>`;
+  }
   data.forEach((_, i) => { html += `<rect x="${i * slot}" y="0" width="${slot}" height="${H}" class="hit" data-i="${i}"/>`; });
   svg.innerHTML = html;
 
