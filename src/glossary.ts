@@ -4,30 +4,39 @@
 import { h } from './dom.ts';
 import type { GlossaryWord, LanguagePack } from './i18n/types.ts';
 
-const patterns = new WeakMap<LanguagePack, { re: RegExp; byForm: Map<string, string> } | null>();
+const patterns = new WeakMap<LanguagePack, { re: RegExp; byForm: Map<string, string> }>();
 
 function patternOf(pack: LanguagePack) {
-  if (patterns.has(pack)) return patterns.get(pack)!;
+  const known = patterns.get(pack);
+  if (known) return known;
   const byForm = new Map<string, string>();
-  for (const [id, w] of Object.entries(pack.words ?? {})) for (const f of w.forms) byForm.set(f.toLowerCase(), id);
-  const forms = [...byForm.keys()].sort((a, b) => b.length - a.length).map((f) => f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
-  const found = forms.length ? { re: new RegExp(`(?<!\\p{L})(${forms.join('|')})(?!\\p{L})`, 'giu'), byForm } : null;
+  const auto: string[] = [];
+  for (const [id, w] of Object.entries(pack.words ?? {}))
+    for (const f of w.forms) {
+      byForm.set(f.toLowerCase(), id);
+      if (!w.marked) auto.push(f.toLowerCase());
+    }
+  const escaped = auto.sort((a, b) => b.length - a.length).map((f) => f.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+  // [marked] words, or the forms of words that link wherever they appear
+  const re = new RegExp(`\\[([^[\\]]+)\\]${escaped.length ? `|(?<!\\p{L})(${escaped.join('|')})(?!\\p{L})` : ''}`, 'giu');
+  const found = { re, byForm };
   patterns.set(pack, found);
   return found;
 }
 
 /** The text with every explained word turned into a link that opens its card. */
 export function linkWords(text: string, pack: LanguagePack, title: string): (string | Node)[] {
-  const p = patternOf(pack);
-  if (!p) return [text];
+  const { re, byForm } = patternOf(pack);
   const out: (string | Node)[] = [];
   let last = 0;
-  for (const m of text.matchAll(p.re)) {
-    const id = p.byForm.get(m[0].toLowerCase())!;
-    out.push(text.slice(last, m.index), h('button', {
+  for (const m of text.matchAll(re)) {
+    const word = m[1] ?? m[2];
+    const id = byForm.get(word.toLowerCase());
+    out.push(text.slice(last, m.index));
+    out.push(id ? h('button', {
       type: 'button', class: 'wordlink',
       onclick: (e: Event) => { e.stopPropagation(); openWord(pack.words![id], title, e.currentTarget as HTMLElement); },
-    }, m[0]));
+    }, word) : word);
     last = m.index! + m[0].length;
   }
   out.push(text.slice(last));

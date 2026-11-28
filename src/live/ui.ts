@@ -3,7 +3,7 @@
 import { TOPICS, isSituation, sceneOf, type TermId, type TopicId } from '../data/model.ts';
 import { h } from '../dom.ts';
 import { FALLBACK, LANGS, LANG_LIST } from '../i18n/index.ts';
-import type { UiKey } from '../i18n/types.ts';
+import { plain, type UiKey } from '../i18n/types.ts';
 import { SCENES } from '../scenes/index.ts';
 import { sceneView } from '../sceneView.ts';
 import { situationView } from '../situationView.ts';
@@ -136,7 +136,7 @@ export function createLive(d: LiveDeps) {
   function questionParts(q: Question, t: ReturnType<typeof text>, descLang: string) {
     const situation = isSituation(q.term);
     if (q.kind === 'define') {
-      const desc = (LANGS[descLang] ?? FALLBACK).terms[q.term].desc.split('\n').map((part) => h('span', { class: 'para' }, part));
+      const desc = plain((LANGS[descLang] ?? FALLBACK).terms[q.term].desc).split('\n').map((part) => h('span', { class: 'para' }, part));
       return { prompt: t('qDefine'), media: h('div', { class: 'quote' }, desc) };
     }
     const media = situation
@@ -413,7 +413,7 @@ export function createLive(d: LiveDeps) {
             place,
             // worth a look while waiting: what the right answer was, and what it means
             h('div', { class: 'quote answer' }, h('b', null, name(q.term)),
-              h('span', null, (LANGS[d.ui()] ?? FALLBACK).terms[q.term].desc.split('\n')[0])),
+              h('span', null, plain((LANGS[d.ui()] ?? FALLBACK).terms[q.term].desc).split('\n')[0])),
           ];
         }
         case 'done': {

@@ -1,6 +1,6 @@
 // Finding terms by name, in any language, forgiving small typos and missing accents.
 import { TERM_IDS, lessonOf, type TermId, type TopicId } from './data/model.ts';
-import type { LanguagePack } from './i18n/types.ts';
+import { plain, type LanguagePack } from './i18n/types.ts';
 import { normalize } from './session.ts';
 
 export interface Hit {
@@ -58,7 +58,7 @@ export function search(query: string, langs: LanguagePack[], max = 20): Hit[] {
         const s = nameScore(word, q);
         if (s !== null && (best === null || s + 1 < best)) best = s + 1;
       }
-      if (best === null && q.length >= 4 && normalize(t.desc).includes(q)) best = 6;
+      if (best === null && q.length >= 4 && normalize(plain(t.desc)).includes(q)) best = 6;
     }
     if (best !== null) hits.push({ term, topic: lessonOf(term).topic, score: best });
   }

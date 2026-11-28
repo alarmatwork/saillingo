@@ -46,5 +46,13 @@ export interface GlossaryWord {
   alt?: string[];
   /** the forms that turn into a link in this language's descriptions (lower case), e.g. vaierid, vaiereid */
   forms: string[];
+  /**
+   * For words that also have an everyday meaning ("ots" is a rope, but also an
+   * end): only places written in [brackets] in the texts become links.
+   */
+  marked?: boolean;
   desc: string;
 }
+
+/** A description without its [marks] (see GlossaryWord.marked), for places that show plain text. */
+export const plain = (text: string) => text.replace(/\[([^[\]]+)\]/g, '$1');

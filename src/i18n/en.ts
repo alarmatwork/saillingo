@@ -215,6 +215,12 @@ export const en: LanguagePack = {
       forms: [],
       desc: 'A very flexible steel cable twisted from thin steel strands. On a boat, wires hold the mast up (shrouds, stays) and run along the guardrails. Ropes on board are called lines.',
     },
+    rope: {
+      name: 'line',
+      alt: ['lines', 'rope'],
+      forms: [],
+      desc: 'On a boat almost every rope is called a line, or by its job: sheet, halyard, mooring line. A steel one is a wire.',
+    },
   },
   lights: {
     masthead: 'masthead light',

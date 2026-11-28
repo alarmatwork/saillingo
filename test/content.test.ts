@@ -86,6 +86,7 @@ test('explained words: found by the search, and every form used in the texts tur
   const { searchWords } = await import('../src/search.ts');
   const { et } = await import('../src/i18n/et.ts');
   for (const q of ['vaier', 'vaierid', 'wire']) assert.equal(searchWords(q, [et, en])[0]?.word, 'wire', q);
+  for (const q of ['ots', 'otsad', 'line']) assert.equal(searchWords(q, [et, en])[0]?.word, 'rope', q);
   for (const pack of LANG_LIST) {
     const ids = Object.keys(pack.words ?? {});
     for (const id of ids) assert.ok(Object.values(LANG_LIST).every((l) => l.words?.[id]), `${id} is explained in every language`);
@@ -93,5 +94,8 @@ test('explained words: found by the search, and every form used in the texts tur
     const texts = [...Object.values(pack.terms).map((x) => x.desc), ...Object.values(pack.topics).map((x) => x.desc), ...Object.values(pack.groups)];
     for (const text of texts)
       for (const word of text.toLowerCase().match(/\p{L}*vaier\p{L}*/gu) ?? []) assert.ok(forms.has(word), `${pack.code}: "${word}" is not in the forms of vaier`);
+    // every [marked] word must be one of the explained words, or it would show up as plain text by mistake
+    for (const text of texts)
+      for (const [, word] of text.matchAll(/\[([^[\]]+)\]/g)) assert.ok(forms.has(word.toLowerCase()), `${pack.code}: [${word}] is not an explained word`);
   }
 });
