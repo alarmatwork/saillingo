@@ -471,7 +471,6 @@ textarea.answer { resize: vertical; font-family: inherit; }
 .admin .tip span { font-size: 0.75rem; opacity: 0.85; }
 .admin .chart .bar.on { fill: var(--gold); }
 .admin .chart .now { stroke: var(--gold); stroke-width: 1.5; pointer-events: none; }
-.admin .chart .nowlbl { fill: var(--gold); font-weight: 700; }
 .admin .chart .num { fill: var(--ink); font-size: 9px; font-weight: 700; }
 .admin .chart .hit { cursor: pointer; }
 .admin details summary { color: var(--muted); font-size: 0.85rem; cursor: pointer; }

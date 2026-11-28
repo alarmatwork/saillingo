@@ -44,7 +44,7 @@ function barChart(title: string, data: Bucket[], weekly: boolean, now = Date.now
   if (at >= 0) {
     const end = data[at + 1]?.start ?? data[at].start + span;
     const x = Math.min(W - 1, (at + (now - data[at].start) / (end - data[at].start)) * slot);
-    html += `<line x1="${x}" x2="${x}" y1="12" y2="${H}" class="now"/><text x="${x}" y="9" class="lbl nowlbl" text-anchor="${x > W - 20 ? 'end' : 'middle'}">now</text>`;
+    html += `<line x1="${x}" x2="${x}" y1="0" y2="${H}" class="now"><title>now</title></line>`;
   }
   data.forEach((_, i) => { html += `<rect x="${i * slot}" y="0" width="${slot}" height="${H}" class="hit" data-i="${i}"/>`; });
   svg.innerHTML = html;
