@@ -64,3 +64,23 @@ export function search(query: string, langs: LanguagePack[], max = 20): Hit[] {
   }
   return hits.sort((a, b) => a.score - b.score).slice(0, max);
 }
+
+export interface WordHit {
+  word: string;
+  score: number;
+}
+
+/** Explained words (vaier, ...) whose name matches the query; same scores as terms. */
+export function searchWords(query: string, langs: LanguagePack[]): WordHit[] {
+  const q = normalize(query);
+  if (q.length < 2) return [];
+  const best = new Map<string, number>();
+  for (const lang of langs)
+    for (const [word, w] of Object.entries(lang.words ?? {}))
+      for (const name of [w.name, ...(w.alt ?? [])]) {
+        const s = nameScore(name, q);
+        const scored = s === null ? null : name === w.name ? s : s + 0.5;
+        if (scored !== null && scored < (best.get(word) ?? Infinity)) best.set(word, scored);
+      }
+  return [...best].map(([word, score]) => ({ word, score })).sort((a, b) => a.score - b.score);
+}

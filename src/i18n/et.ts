@@ -7,6 +7,14 @@ import type { LanguagePack } from './types.ts';
 export const et: LanguagePack = {
   code: 'et',
   name: 'Eesti',
+  words: {
+    wire: {
+      name: 'vaier',
+      alt: ['vaierid'],
+      forms: ['vaier', 'vaierid', 'vaieri', 'vaierit', 'vaierite', 'vaiereid', 'vaieriga', 'vaieritega', 'vaieris', 'vaierist', 'vaierisse', 'vaierile', 'vaieritele', 'turvavaier', 'turvavaierid', 'turvavaiereid', 'reelinguvaierid'],
+      desc: 'Ülipainduv terastross, punutud peenikestest terastraatidest. Paadil hoiavad vaierid masti püsti (vandid, staagid) ja on ka reelingutes. Köisi nimetatakse paadil hoopis otsadeks.',
+    },
+  },
   lights: {
     masthead: 'topituli',
     masthead2: 'kaks topituld püstsirgel',
@@ -92,6 +100,7 @@ export const et: LanguagePack = {
     searchPlaceholder: 'Otsi terminit, nt roolipinn',
     searchHint: 'Otsi eesti või inglise keeles. Väikesed kirjavead pole probleem.',
     searchNone: 'Terminit „{q}" veel ei ole.',
+    wordExplained: 'Sõnaseletus',
     searchSuggest: 'Soovita see lisada',
     searchMailBody: 'Palun lisa SailLingosse termin „{q}".',
     updated: 'SailLingo uuendati versioonile {n}',

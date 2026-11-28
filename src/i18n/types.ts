@@ -34,4 +34,17 @@ export interface LanguagePack {
   terms: Record<TermId, TermText>;
   /** names of the lights listed under the night signals */
   lights: Record<LightId, string>;
+  /**
+   * Everyday sailors' words used in the descriptions, explained in a popup when
+   * tapped and found by the search. Same id in every language.
+   */
+  words?: Record<string, GlossaryWord>;
+}
+
+export interface GlossaryWord {
+  name: string;
+  alt?: string[];
+  /** the forms that turn into a link in this language's descriptions (lower case), e.g. vaierid, vaiereid */
+  forms: string[];
+  desc: string;
 }

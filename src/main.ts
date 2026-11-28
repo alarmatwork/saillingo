@@ -10,7 +10,8 @@ import { SCENES } from './scenes/index.ts';
 import { sceneView, type SceneHandle } from './sceneView.ts';
 import { givesWay, situationView } from './situationView.ts';
 import { Session, checkTyped, type Exercise } from './session.ts';
-import { search } from './search.ts';
+import { search, searchWords } from './search.ts';
+import { linkWords, openWord } from './glossary.ts';
 import { MIN_PLAYERS, fetchRank } from './cloud/rank.ts';
 import { sendMessage } from './cloud/messages.ts';
 import { liveAvailable, liveOnHome } from './live/backend.ts';
@@ -112,7 +113,9 @@ const termName = (id: TermId) => LEARN().terms[id].name;
 /** the same term in the language the learner speaks */
 const termHint = (id: TermId) => UI().terms[id].name;
 /** a term's explanation; a line break in the text starts a new short paragraph */
-const termDesc = (id: TermId) => UI().terms[id].desc.split('\n').map((part) => h('span', { class: 'para' }, part));
+const termDesc = (id: TermId) => UI().terms[id].desc.split('\n').map((part) => h('span', { class: 'para' }, explained(part)));
+/** text with its sailors' words (vaier, ...) tappable for an explanation */
+const explained = (text: string) => linkWords(text, UI(), t('wordExplained'));
 
 let onKey: ((e: KeyboardEvent) => void) | null = null;
 document.addEventListener('keydown', (e) => onKey?.(e));
@@ -198,7 +201,7 @@ function home({ toProgress = false } = {}) {
     return h('section', { class: `topic${on ? '' : ' off'}`, 'data-topic': topic.id },
       h('header', null,
         h('div', { class: 'thumb' }, sceneView(SCENES[topic.scene]).el),
-        h('div', { class: 'tt' }, h('h2', null, info.name), h('p', null, info.desc),
+        h('div', { class: 'tt' }, h('h2', null, info.name), h('p', null, explained(info.desc)),
           h('div', { class: 'meter' }, h('i', { style: `width:${(done / tt.length) * 100}%` })),
           h('small', null, `${done} / ${tt.length} ${t('mastered')}`)),
         h('label', { class: 'switch', title: t('topicToggle') }, toggle, h('span', null))),
@@ -424,12 +427,23 @@ function searchScreen(initial = '') {
     const q = input.value.trim();
     if (q.length < 2) return list.replaceChildren(h('p', { class: 'hint' }, t('searchHint')));
     const hits = search(q, langs);
-    if (!hits.length) {
+    // explained words (vaier, ...) in the speaker's language when it has them
+    const words = searchWords(q, langs).flatMap(({ word, score }) => {
+      const w = UI().words?.[word] ?? langs.find((l) => l.words?.[word])?.words?.[word];
+      return w ? [{ w, score, learn: LEARN().words?.[word]?.name }] : [];
+    });
+    if (!hits.length && !words.length) {
       return list.replaceChildren(h('div', { class: 'quote' },
         h('p', null, t('searchNone', { q })),
         suggestButton(q)));
     }
-    list.replaceChildren(...hits.map((hit) => h('button', {
+    const wordRows = words.filter((x) => !hits.length || x.score <= hits[0].score + 1).map(({ w, learn }) => h('button', {
+      type: 'button', class: 'hit word',
+      onclick: () => { track('search-word'); openWord(w, t('wordExplained')); },
+    },
+      h('span', { class: 'ht' }, h('b', null, learn && learn !== w.name ? learn : w.name), learn && learn !== w.name && h('small', null, w.name)),
+      h('small', { class: 'htopic' }, `📖 ${t('wordExplained')}`)));
+    list.replaceChildren(...wordRows, ...hits.map((hit) => h('button', {
       type: 'button', class: 'hit',
       onclick: () => {
         track('search-open');
@@ -816,7 +830,7 @@ function runSession(sess: Session, lesson: Lesson | null, test = false) {
       case 'group': {
         let sel: TermId[] = [];
         const list = choices(e.options, true, (s) => { sel = s; check.disabled = !s.length; });
-        body.replaceChildren(h('h2', null, UI().groups[e.group]), h('p', { class: 'hint' }, `☑ ${t('selectAll')}`), list.el);
+        body.replaceChildren(h('h2', null, explained(UI().groups[e.group])), h('p', { class: 'hint' }, `☑ ${t('selectAll')}`), list.el);
         const check = checkButton(() => {
           list.reveal(e.correct);
           const ok = sel.length === e.correct.length && e.correct.every((c) => sel.includes(c));

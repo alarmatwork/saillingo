@@ -81,3 +81,17 @@ test('search finds a part by the action it is used for', async () => {
     for (const id of ['forestay', 'backstay', 'shrouds', 'lifelines']) assert.ok(found.includes(id as never), `${q}: ${id}`);
   }
 });
+
+test('explained words: found by the search, and every form used in the texts turns into a link', async () => {
+  const { searchWords } = await import('../src/search.ts');
+  const { et } = await import('../src/i18n/et.ts');
+  for (const q of ['vaier', 'vaierid', 'wire']) assert.equal(searchWords(q, [et, en])[0]?.word, 'wire', q);
+  for (const pack of LANG_LIST) {
+    const ids = Object.keys(pack.words ?? {});
+    for (const id of ids) assert.ok(Object.values(LANG_LIST).every((l) => l.words?.[id]), `${id} is explained in every language`);
+    const forms = new Set(Object.values(pack.words ?? {}).flatMap((w) => w.forms));
+    const texts = [...Object.values(pack.terms).map((x) => x.desc), ...Object.values(pack.topics).map((x) => x.desc), ...Object.values(pack.groups)];
+    for (const text of texts)
+      for (const word of text.toLowerCase().match(/\p{L}*vaier\p{L}*/gu) ?? []) assert.ok(forms.has(word), `${pack.code}: "${word}" is not in the forms of vaier`);
+  }
+});

@@ -69,6 +69,7 @@ export const enUi = {
   searchPlaceholder: 'Search for a term, e.g. tiller',
   searchHint: 'Search in English or Estonian. Small typos are fine.',
   searchNone: 'No term matches "{q}" yet.',
+  wordExplained: 'Word explained',
   searchSuggest: 'Suggest adding it',
   searchMailBody: 'Please add the term "{q}" to SailLingo.',
   updated: 'SailLingo was updated to version {n}',
@@ -207,6 +208,14 @@ export const en: LanguagePack = {
   code: 'en',
   name: 'English',
   ui: enUi,
+  words: {
+    wire: {
+      name: 'wire',
+      alt: ['wire rope', 'steel wire'],
+      forms: [],
+      desc: 'A very flexible steel cable twisted from thin steel strands. On a boat, wires hold the mast up (shrouds, stays) and run along the guardrails. Ropes on board are called lines.',
+    },
+  },
   lights: {
     masthead: 'masthead light',
     masthead2: 'two masthead lights in a vertical line',
